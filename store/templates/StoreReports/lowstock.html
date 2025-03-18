@@ -1,0 +1,88 @@
+{% extends 'daze.html' %}
+{% block title %}
+Reports for Orchad store
+{% endblock %}
+
+{% block content %}
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .low-stock {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+{% if user.is_authenticated %}
+
+<div class="col-8 mx-auto">
+    <h1>Product Report</h1>
+
+    <!-- Table for All Products -->
+    <h2>All Products</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Cost Price</th>
+                <th>Expiry Date</th>
+                <th>Supplier</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.cost_price }}</td>
+                    <td>{{ product.expiry_date }}</td>
+                    <td>{{ product.supplier }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Table for Low Stock Products -->
+    <h2>Low Stock Products (Below 10)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Cost Price</th>
+                <th>Expiry Date</th>
+                <th>Supplier</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in low_stock %}
+                <tr class="low-stock">
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.cost_price }}</td>
+                    <td>{{ product.expiry_date }}</td>
+                    <td>{{ product.supplier }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'storereport'%}"> <button type="submit" class="btn btn-primary">Back</button></a>
+   
+
+</div>
+
+
+{% endif %}
+{% endblock %}

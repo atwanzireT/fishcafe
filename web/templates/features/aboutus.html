@@ -1,0 +1,24 @@
+<!-- About us -->
+ {% load static %}
+
+
+<section class="about py-5">
+	<div class="container">
+		<h3 class="heading text-center text-uppercase mb-5"> Our Specials </h3>
+		<p class="aboutpara text-center">Life is all about finding new tastes and flavors. Give ours a shot. </p>
+		
+		<div class="row about_grids mt-5">
+			{% for item in dishes %}
+			<div class="col-md-4">
+				<img src="{{item.image_url}}" alt="" class="img-fluid" />
+				<h3 class="mt-3 my-2 text-capitalize">{{item.name}}</h3>
+				<p class="mb-2">{{item.description}}</p>	
+			</div>
+			{% endfor %}
+		</div>
+		
+	</div>
+</section>
+
+	
+<!-- //About us -->

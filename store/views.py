@@ -1,0 +1,141 @@
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Sum, F, FloatField
+from .forms import CategoryForm, SupplierForm, ProductForm, IssuedProductForm, BatchForm
+from .models import Category, Supplier, Product, IssuedProduct, Batch
+from django.core.paginator import Paginator
+
+# Static Pages
+def tasty(request):
+    return render(request, 'daze.html')
+
+@login_required(login_url='/user/login/')
+def home(request):
+    products = Product.objects.all()
+    paginator = Paginator(products, 10)
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
+    return render(request, 'storehome.html', {"products": products})
+
+# Add Views
+@login_required(login_url='/user/login/')
+def new_product(request):
+    form = ProductForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('product_list')
+    return render(request, 'store/add_new_product.html', {'form': form})
+
+@login_required(login_url='/user/login/')
+def suppliers(request):
+    suppliers = Supplier.objects.all()
+    return render(request, 'list/supplierlist.html', {'suppfliers': suppliers})
+
+
+@login_required(login_url='/user/login/')
+def add_supplier(request):
+    form = SupplierForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('supplier_list')
+    return render(request, 'store/add_suppiler.html', {'form': form})
+
+@login_required(login_url='/user/login/')
+def add_category(request):
+    form = CategoryForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Product category added successfully")
+        return redirect('product_list')
+    return render(request, 'store/add_category.html', {'form': form})
+
+@login_required(login_url='/user/login/')
+def receive_product(request):
+    form = ProductForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Product received successfully")
+        return redirect('product_list')
+    return render(request, 'store/add_product.html', {'form': form})
+
+# Edit and Delete Views
+@login_required(login_url='/user/login/')
+def edit_product(request, pk):
+    product = get_object_or_404(Batch, pk=pk)
+    form = BatchForm(request.POST or None, instance=product)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Product updated successfully.")
+        return redirect('storehome')
+    return render(request, 'store/edit.html', {'form': form, 'product': product})
+
+@login_required(login_url='/user/login/')
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        product.delete()
+        messages.success(request, "Product deleted successfully.")
+        return redirect('productlist')
+    return render(request, 'store/delete.html', {'product': product})
+
+# List Views
+@login_required(login_url='/user/login/')
+def supplierlist(request):
+    suppliers = Supplier.objects.all()
+    return render(request, 'lists/supplierlist.html', {'suppliers': suppliers})
+
+@login_required(login_url='/user/login/')
+def productlist(request):
+    products = Product.objects.all()
+    return render(request, 'lists/productlist.html', {'products': products})
+
+@login_required(login_url='/user/login/')
+def issued_product_list(request):
+    issued_products = IssuedProduct.objects.all()
+    return render(request, 'lists/issued_product_list.html', {'issued_products': issued_products})
+
+
+# Batches
+@login_required(login_url='/user/login/')
+def add_batch(request):
+    if request.method == 'POST':
+        form = BatchForm(request.POST)
+        if form.is_valid():
+            form.save() 
+            return redirect(reverse('storehome'))
+    else:
+        form = BatchForm()
+    
+    return render(request, 'batch_form.html', {'form': form})
+
+@login_required(login_url='/user/login/') 
+def batches_list(request, prdID): 
+    batches = Batch.objects.filter(product__id=prdID) 
+    context = {"batches": batches} 
+    return render(request, "lists/batcheslist.html", context)
+
+
+def issued_product_create(request):
+    if request.method == 'POST':
+        form = IssuedProductForm(request.POST)
+        if form.is_valid():
+            store = form.save(commit=False)
+            store.issued_by = request.user
+            store.save() 
+            return redirect('storehome') 
+    else:
+        form = IssuedProductForm()
+    return render(request, 'store/issued_product_form.html', {'form': form})
+
+def view_issued_product(request):
+    issued_products = IssuedProduct.objects.all().order_by('-date_taken')  # Add ordering for better display
+    paginator = Paginator(issued_products, 10)  # Show 10 items per page
+
+    page_number = request.GET.get('page')  # Get the current page number from the request
+    issued_products = paginator.get_page(page_number)  # Get the products for the current page
+
+    return render(request, "issued_products.html", {"issued_products": issued_products})

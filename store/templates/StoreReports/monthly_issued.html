@@ -1,0 +1,78 @@
+{% extends 'daze.html' %}
+{% block title %}
+Reports for Orchad store
+{% endblock %}
+
+{% block content %}
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+{% if user.is_authenticated %}
+
+<div class="col-8 mx-auto">
+    <h1>Monthly Product Issued Report</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="month">Month:</label>
+        <select name="month" id="month">
+            {% for i in months %}
+                <option value="{{ i }}" {% if i == month %}selected{% endif %}>{{ i }}</option>
+            {% endfor %}
+        </select>
+
+
+        <label for="year">Year:</label>
+        <input type="number" name="year" id="year" value="{{ year }}" min="2020" max="{{ current_year }}">
+
+        <button type="submit">Generate Report</button>
+    </form>
+
+    <h2>Issued Products for {{ month }}/{{ year }}</h2>
+    <p>Total Quantity Issued: {{ total_quantity_issued }}</p>
+    <p>Total Cost of Issued Products: UGX.{{ total_cost|floatformat:2 }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity Taken</th>
+                <th>Date Taken</th>
+                <th>Person Receiving</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issued_product in issued_products %}
+                <tr>
+                    <td>{{ issued_product.product.name }}</td>
+                    <td>{{ issued_product.quantity_taken }}</td>
+                    <td>{{ issued_product.date_taken }}</td>
+                    <td>{{ issued_product.person_receiving }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No products issued for this month.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'storereport'%}"> <button type="submit" class="btn btn-primary">Back</button></a>
+   
+
+</div>
+ 
+{% endif %}
+{% endblock %}

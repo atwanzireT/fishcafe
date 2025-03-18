@@ -1,0 +1,119 @@
+{% extends 'daze.html' %}
+{% block title %}
+Reports for Orchad store
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .expired {
+            color: red;
+            font-weight: bold;
+        }
+        .near-expiry {
+            color: orange;
+            font-weight: bold;
+        }
+    </style>
+
+<div class="col-8 mx-auto">
+    <h1>Product Expiry Report</h1>
+
+    <!-- Table for All Products -->
+    <h2>All Products</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Cost Price</th>
+                <th>Expiry Date</th>
+                <th>Supplier</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.cost_price }}</td>
+                    <td>{{ product.expiry_date }}</td>
+                    <td>{{ product.supplier }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Table for Expired Products -->
+    <h2>Expired Products</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Cost Price</th>
+                <th>Expiry Date</th>
+                <th>Supplier</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in expired_products %}
+                <tr class="expired">
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.cost_price }}</td>
+                    <td>{{ product.expiry_date }}</td>
+                    <td>{{ product.supplier }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Table for Near-Expiry Products -->
+    <h2>Products Near Expiry (Next 30 Days)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Cost Price</th>
+                <th>Expiry Date</th>
+                <th>Supplier</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in near_expiry_products %}
+                <tr class="near-expiry">
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.cost_price }}</td>
+                    <td>{{ product.expiry_date }}</td>
+                    <td>{{ product.supplier }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'storereport'%}"> <button type="submit" class="btn btn-primary">Back</button></a>
+   
+
+</div>
+    
+{% endif %}
+{% endblock %}

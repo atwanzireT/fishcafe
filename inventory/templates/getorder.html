@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" id="receipt">
+    <div class="card-body">
+        <div class="row">
+            <div class=" mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <div>
+                            <h3 class="text-center mb-4">{{ setting.hotel_name | default:"" }}</h3>
+                            <div class="row">
+                                <div class="col">{{ setting.phone_number | default:"" }}</div>
+                                <div class="col">{{ setting.email | default:"" }}</div>
+                            </div>
+                        </div>
+                        <h5 class="text-center mb-4">Order Details</h5>
+                        <p><strong class="text-bold">Order Number: </strong> {{ order.order.random_id }} {{ order.order.table }}</p>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <h6>Customer:</h6>
+                                
+                                <p>{{ order.order.customer_name }}</p>
+                            </div>
+                            <div class="col-6 text-right">
+                                <h6>Date:</h6>
+                                <p>{{ order.order_date }}</p>
+                            </div>
+                        </div>
+
+                        <h6>Order Details</h6>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ order.menu_item.name }}</td>
+                                    <td>{{ order.quantity }}</td>
+                                    <td>{{ order.menu_item.price }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+
+                        <div class="row">
+                            <div class="col-6">
+                                <h6>Status:</h6>
+                                <p>{{ order.status }}</p>
+                            </div>
+                            <div class="col-6 text-right">
+                                <h6>Order Type:</h6>
+                                <p>{{ order.order_type }}</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <h6>Special Notes:</h6>
+                                <p>{{ order.special_notes | default:"None" }}</p>
+                            </div>
+                            <div class="col-6 text-right">
+                                <h6>Total Price:</h6>
+                                <p><strong>UGX {{ order.total_price }}</strong></p>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="text-center">
+                            <p><strong>Thank you for dining with us!</strong></p>
+                            <p><em>Created by: {{ order.order.created_by.username }}</em></p>
+                        </div>
+                        <div class="col-auto">
+                            <a href="/manager/print_order/{{order.id}}/" class="btn btn-primary no-print">Print Order</a>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_css %}
+<style>
+    /* Hide unnecessary elements during print */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #receipt,
+        #receipt * {
+            visibility: visible;
+        }
+
+        #receipt {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .no-print {
+            display: none;
+        }
+    }
+</style>
+{% endblock extra_css %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    table {
+        font-size: .9rem;
+        font-family: 'Arial', sans-serif;
+    }
+</style>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <h4 class="fw-semibold mb-2">Products</h4>
+            <div class="container mt-2">
+                <div class="row">
+                    <div class="col-auto">
+                        <a href="/store/add/category/" class="btn btn-primary">Add New Category</a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="/store/add/supplier/" class="btn btn-primary">Add New Supplier</a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="/store/add/new-product/" class="btn btn-primary">Add Product Item</a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="/store/batch/add/" class="btn btn-primary">Add New Batch</a>
+                    </div>
+
+                </div>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <!-- <th>Quantity Remaining</th> -->
+                            <th>Category</th>
+                            <!-- <th>Unit Price</th>
+                            <th>Total Cost</th>
+                            <th>Expiry Date</th> -->
+                            <th>Actions</th>
+                            <!-- <th>Status</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <!-- <td class="{% if product.quantity < 10 %}low-stock{% endif %}">{{ product.quantity }}</td> -->
+                            <td>{{ product.category }}</td>
+                            <!-- <td>{{ product.cost_per_item}}</td>
+                            <td>{{ product.total_cost}}</td>
+                            <td {% if product.is_near_expiry %}style="color: red;"{% endif %}>
+                                {{ product.expiry_date }}
+                            </td> -->
+                            <td>
+
+                                <a class="btn btn-warning me-1" href="{% url 'edit_product' product.pk %}">
+                                    <i class="fa-solid fa-pen-to-square fa-lg"></i>
+                                </a>
+                                <a class="btn btn-warning me-1" href="/store/batch-list/{{rs.id}}/">
+                                    View Stock Batches
+                                    <i class="fa-solid fa-trash fa-lg"></i>
+                                </a>
+
+
+
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- Bootstrap JS, Popper.js, and jQuery -->
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

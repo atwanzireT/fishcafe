@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="" id="receipt">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <div>
+                            <h3 class="text-center mb-4">FishPoint Motel</h3>
+                            <div class="row">
+                                <div class="col"></div>
+                                <div class="col"></div>
+                            </div>
+                        </div>
+                        <h5 class="text-center mb-4">Order Details</h5>
+                        <p><strong class="text-bold">Order Number: </strong> {{ order.random_id }} {{ order.table }}</p>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <h6>Customer:</h6>
+                                <p>{{ order.customer_name }}</p>
+                            </div>
+                            <div class="col-6 text-right">
+                                <h6>Date:</h6>
+                                <p>{{ order.created }}</p>
+                            </div>
+                        </div>
+
+                        <h6>Order Items</h6>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                <tr>
+                                    <td>{{ item.menu_item.name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.menu_item.price }}</td>
+                                    <td>{{ item.total_price }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="3" class="text-right"><strong>Overall Total</strong></td>
+                                    <td><strong>{{ total_price }}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <hr>
+
+                        <div class="text-center">
+                            <p><strong>Thank you for dining with us!</strong></p>
+                            <p><em>Created by: {{ order.created_by.username }}</em></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-auto">
+                <a href="/manager/print_receipt/{{order.id}}/" class="btn btn-primary no-print">Print Receipt</a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="/manager/print_invoice/{{order.id}}/" class="btn btn-secondary no-print">Print Invoice</a>
+                            </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <h5 class="text-center my-4">Balance Calculator</h5>
+                    <div class="mx-4">
+                        <div class="mt-4">
+                            <label class="fw-bold" for="amountGiven">Amount Given:</label>
+                            <input type="number" id="amountGiven" class="form-control">
+                        </div>
+
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="calculateBalance()" disabled>
+                                Calculate Balance
+                            </button>
+                        </div>
+
+                        <div class="my-2">
+                            <label class="fw-bold" for="balance">Balance:</label>
+                            <input type="text" id="balance" class="form-control" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Store total price as a JavaScript variable for calculation
+    const totalPrice = parseFloat("{{ total_price|floatformat:2 }}") || 0;
+
+    function calculateBalance() {
+        const amountGiven = parseFloat(document.getElementById('amountGiven').value) || 0;
+        const balance = amountGiven - totalPrice;
+
+        document.getElementById('balance').value = balance >= 0 ? balance.toFixed(2) : 'Insufficient amount';
+    }
+
+    // Enable button only when amount is entered
+    document.getElementById('amountGiven').addEventListener('input', function() {
+        document.querySelector('button[onclick="calculateBalance()"]').disabled = !this.value;
+    });
+</script>
+{% endblock content %}
+
+{% block extra_css %}
+<style>
+    /* Hide unnecessary elements during print */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #receipt,
+        #receipt * {
+            visibility: visible;
+        }
+
+        #receipt {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .no-print {
+            display: none;
+        }
+    }
+</style>
+{% endblock extra_css %}

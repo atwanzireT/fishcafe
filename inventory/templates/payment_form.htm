@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenGapay Payment</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Make a Payment</h2>
+        <form id="paymentForm" method="POST" action="/manager/zengapay/collection/">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="msisdn">Phone Number (MSISDN)</label>
+                <input type="text" class="form-control" id="msisdn" name="msisdn" placeholder="Enter phone number" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter amount" min="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="external_reference">External Reference</label>
+                <input type="text" class="form-control" id="external_reference" name="external_reference" placeholder="Enter external reference" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="narration">Narration</label>
+                <textarea class="form-control" id="narration" name="narration" rows="3" placeholder="Enter narration" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Submit Payment</button>
+        </form>
+
+        <div id="responseMessage" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.getElementById("paymentForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": formData.get("csrfmiddlewaretoken")
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseMessage = document.getElementById("responseMessage");
+                if (data.error) {
+                    responseMessage.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                } else {
+                    responseMessage.innerHTML = `<div class="alert alert-success">Payment successful: ${JSON.stringify(data)}</div>`;
+                    form.reset();
+                }
+            })
+            .catch(error => {
+                document.getElementById("responseMessage").innerHTML = `<div class="alert alert-danger">An error occurred: ${error}</div>`;
+            });
+        });
+    </script>
+</body>
+</html>

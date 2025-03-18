@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hotel Manager</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/seodashlogo.png' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/styles.min.css' %}" />
+</head>
+
+<body>
+    <!--  Body Wrapper -->
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed">
+        <!-- Sidebar Start -->
+        <aside class="left-sidebar">
+            <!-- Sidebar scroll-->
+            <div>
+                <div class="brand-logo d-flex align-items-center justify-content-between">
+                    <a href="/" class="text-nowrap logo-img">
+                        <img style="width: 200px;" src="{% static 'assets/images/logos/logo.png' %}" alt="" />
+                    </a>
+                    <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                        <i class="ti ti-x fs-8"></i>
+                    </div>
+                </div>
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+                    <ul id="sidebarnav">
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Dashboard</span>
+                            </a>
+                        </li>
+
+                        <!-- <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/menu/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Menu</span>
+                            </a>
+                        </li> -->
+
+                        <!-- <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/add-order/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Place Order</span>
+                            </a>
+                        </li> -->
+
+                        <!-- <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/roomtypes/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Rooms</span>
+                            </a>
+                        </li> -->
+
+                        <!-- <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/add-reservation/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Make Reservation</span>
+                            </a>
+                        </li> -->
+
+                        <!-- <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/reservations/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Reservations</span>
+                            </a>
+                        </li> -->
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/orders/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Orders</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/orders_transactions/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Order Transactions</span>
+                            </a>
+                        </li>
+                        
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/cleared_transactions/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Cleared  Transactions</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/kitchen/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Kitchen</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/store/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Store</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/manager/reports/" aria-expanded="false">
+                                <span>
+                                    <iconify-icon icon="solar:map-arrow-right-bold" class="fs-6"></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Reports</span>
+                            </a>
+                        </li>
+
+                        <form action="" method="post">
+                            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+                        </form>
+
+
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+        </aside>
+        <!--  Sidebar End -->
+        <!--  Main wrapper -->
+        <div class="body-wrapper">
+            <!--  Header Start -->
+            <header class="app-header">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <ul class="navbar-nav">
+                        <li class="nav-item d-block d-xl-none">
+                            <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse"
+                                href="javascript:void(0)">
+                                <i class="ti ti-menu-2"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                           
+                        </li>
+                    </ul>
+                    <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                        <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+
+                            <!-- <div class="my-auto">
+                                <input type="text" class="form-control" id="search"
+                                    placeholder="Search For Order">
+                            </div> -->
+                            
+                            <form action="" method="post">
+                                <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+                            </form>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="https://i.pinimg.com/736x/57/00/c0/5700c04197ee9a4372a35ef16eb78f4e.jpg"
+                                        alt="" width="35" height="35" class="rounded-circle">
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
+                                    aria-labelledby="drop2">
+                                    <div class="message-body">
+                                        <a href="javascript:void(0)"
+                                            class="d-flex align-items-center gap-2 dropdown-item">
+                                            <i class="ti ti-mail fs-6"></i>
+                                            <p class="mb-0 fs-3">User</p>
+                                        </a>
+                                        <a href="{% url 'logout' %}"
+                                            class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </header>
+            <!--  Header End -->
+            <div class="container-fluid">
+                {% block content %}
+
+                {% endblock content %}
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/libs/apexcharts/dist/apexcharts.min.js' %}"></script>
+    <script src="{% static 'assets/libs/simplebar/dist/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/sidebarmenu.js' %}"></script>
+    <script src="{% static 'assets/js/app.min.js' %}"></script>
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+
+</html>

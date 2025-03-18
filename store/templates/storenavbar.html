@@ -1,0 +1,77 @@
+<style>
+
+nav a {
+    font-size: 15px;    /* Makes the text smaller */
+    color: black;       /* Sets the text color to black */
+    text-decoration: none;  /* Removes underline if any */
+}
+
+/* Optional: Style the nav items on hover */
+nav a:hover {
+    color: #555;        /* Dark gray when hovered */
+}
+
+</style>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'storehome' %}">Fish Cafe Store</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        {% if user.is_authenticated %}
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'newproduct' %}">Add New Products <span class="sr-only">(current)</span></a>
+        </li>
+
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'productlist' %}">Product List <span class="sr-only">(current)</span></a>
+        </li>
+        
+
+
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'issuedproduct' %}">Issue Products <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'issuedproductlist' %}">IssuePdtlist <span class="sr-only">(current)</span></a>
+        </li>
+
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'add_supplier' %}">Add Supplier<span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'supplierlist' %}">Suppliers<span class="sr-only">(current)</span></a>
+        </li>
+
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'add_category' %}">Add category<span class="sr-only">(current)</span></a>
+        </li>
+
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'storereport' %}">Reports<span class="sr-only">(current)</span></a>
+        </li>
+
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'logout' %}">Logout <span class="sr-only">(current)</span></a>
+        </li>
+        {% else %}
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'storelogin' %}">Login <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'storeregister' %}">Register <span class="sr-only">(current)</span></a>
+        </li>
+        {% endif %}
+        
+        
+  
+        
+
+      </ul>
+ 
+    </div>
+  </nav>

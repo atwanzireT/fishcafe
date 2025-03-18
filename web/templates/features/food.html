@@ -1,0 +1,52 @@
+<!-- food gallery -->
+{% load static %}
+<section class="banner_bottom proj py-5">
+    <div class="wrap_view">
+        <h3 class="heading text-center text-uppercase mb-5"> Food Menu </h3>
+        <div class="inner_sec">
+            <!-- <ul class="portfolio-categ filter">
+                <li class="port-filter all active">
+                    <a href="#">All</a>
+                </li>
+                <li class="cat-item-1">
+                    <a href="#" title="Category 1">Category 1</a>
+                </li>
+                <li class="cat-item-2">
+                    <a href="#" title="Category 2">Category 2</a>
+                </li>
+                <li class="cat-item-3">
+                    <a href="#" title="Category 3">Category 3</a>
+                </li>
+                <li class="cat-item-4">
+                    <a href="#" title="Category 4">Category 4</a>
+                </li>
+            </ul> -->
+
+
+            <ul class="portfolio-area">
+
+                {% for item in foods %}
+                    <li class="portfolio-item2 mb-2" data-id="id-4" data-type="cat-item-3">
+                        <div>
+                            <span class="image-block">
+                           
+
+                                    <div class="port-info">
+                                        <h5>{{item.name}}</h5>
+                                        <p>{{item.description}}</p>
+                                    </div>
+                                </a>
+                            </span>
+                        </div>
+                    </li>
+                {% endfor %}
+
+            </ul>
+            <!--end portfolio-area -->
+
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</section>
+<!--//food gallery-->

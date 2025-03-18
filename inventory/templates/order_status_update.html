@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <!-- Card to hold the form -->
+    <div class="card shadow-sm">
+      <div class="card-header bg-default text-white">
+        <h2 class="text-center">Update Status for Order #{{ order.random_id }}</h2>
+      </div>
+      <div class="card-body">
+        <form method="POST" class="needs-validation" novalidate>
+          {% csrf_token %}
+          <div class="form-group">
+            {{ form.as_p }}
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success btn">Update Status</button>
+            <a href="/manager/orders/" class="btn btn-secondary btn ml-3">Back to Orders</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+        $('#category-select').change(function() {
+            const categoryId = $(this).val();
+            $.ajax({
+                url: "{% url 'load_menu_items' %}",  // URL of the view created in Step 2
+                data: {
+                    'category': categoryId
+                },
+                success: function(data) {
+                    let options = '<option value="">Select a menu item</option>';
+                    data.forEach(function(menuItem) {
+                        options += `<option value="${menuItem.id}">${menuItem.name}</option>`;
+                    });
+                    $('#menu-item-select').html(options);
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+  <!-- Custom CSS styling for alignment -->
+  <style>
+    .container {
+      max-width: 600px;
+    }
+    .card {
+      border-radius: 10px;
+    }
+    .card-header {
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+    }
+    .btn {
+      width: 200px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .card-body {
+      padding: 30px;
+    }
+  </style>
+
+
+
+
+{% endblock %}

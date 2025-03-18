@@ -1,0 +1,65 @@
+{% extends 'storebase.html '%}
+{% block title %} orcahrd store {% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<style>
+    table {
+        font-size: .9rem;
+        font-family: 'Arial', sans-serif;
+    }
+</style>
+<div class="col-8 mx-auto">
+    
+<h1>Items Issused</h1>
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .low-stock {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+    
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity taken</th>
+                <th>Date Taken</th>
+                <th>Person Receiving</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.product }}</td> 
+                    <td>{{ product.quantity_taken }}</td>
+                    <td>{{ product.date_taken}}</td>
+                    <td>{{ product.person_receiving }}</td>
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<h5>You are not logged in</h5>    
+
+{% endif %}   
+
+    
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'homebase.html' %}
+{% load static %}
+
+{% block content %}
+<!-- inner page banner -->
+<section class="inner_banner">
+    <div class="dot1">
+    </div>
+</section>
+<!-- inner page banner -->
+
+<!--Food gallery-->
+<section class="banner_bottom proj py-5">
+    <div class="wrap_view">
+        <h1 class="heading text-center text-uppercase mb-5"> Food Gallery </h1>
+        <div class="inner_sec">
+            <ul class="portfolio-area">
+                {% for item in menu %}
+                    <li class="portfolio-item2 mb-2" data-id="id-2" data-type="cat-item-1">
+                        <div>
+                            <span class="image-block">
+                                <a class="image-zoom" href="{{item.image_url.url}}" rel="prettyPhoto[gallery]">
+
+                                    <img src="{{item.image_url.url}}" class="img-responsive" alt="Cafe In image">
+                                    <div class="port-info">
+                                        <h5>{{item.name}}</h5>
+                                        <p>{{item.description}}</p>
+                                    </div>
+                                </a>
+                            </span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <!--end portfolio-area -->
+
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</section>
+<!--//Food gallery-->
+{% endblock content %}

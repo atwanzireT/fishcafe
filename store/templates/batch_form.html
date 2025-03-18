@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h5 class="card-title fw-semibold mb-4">Add Batch Item</h5>
+
+<!-- Center the card and make it more spacious -->
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+      <div class="card shadow-lg">
+        <div class="card-body">
+          <form method="post" class="row g-3">
+            {% csrf_token %}
+            {{form.as_p}}
+            <div class="col-md-12">
+              <button type="submit" class="btn btn-primary w-100">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#category-select').change(function() {
+            const categoryId = $(this).val();
+            $.ajax({
+                url: "{% url 'load_menu_items' %}",  // URL of the view created in Step 2
+                data: {
+                    'category': categoryId
+                },
+                success: function(data) {
+                    let options = '<option value="">Select a menu item</option>';
+                    data.forEach(function(menuItem) {
+                        options += `<option value="${menuItem.id}">${menuItem.name}</option>`;
+                    });
+                    $('#menu-item-select').html(options);
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+{% endblock content %}

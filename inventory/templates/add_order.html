@@ -1,0 +1,335 @@
+{% extends 'base.html' %} {% load static %} {% block extra_css %}
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"
+  rel="stylesheet"
+/>
+<style>
+  body {
+    background: linear-gradient(to bottom right, #e0e7ff, #c7d2fe);
+    min-height: 100vh;
+  }
+  .card {
+    background-color: rgba(255, 255, 255, 0.8);
+
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .category-card {
+    transition: all 0.3s ease;
+  }
+  .category-card:hover {
+    transform: scale(1.05);
+  }
+  .category-card.selected {
+    background-color: #4f46e5;
+    color: white;
+  }
+  .menu-item-card {
+    background-color: #eef2ff;
+  }
+  .quantity-input {
+    width: 60px;
+    text-align: center;
+
+  }
+  .card-body{
+    
+  }
+  .card-header {
+    background-color: #4f46e5;
+    color: white;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="container">
+ 
+
+    <div class="row">
+        <form method="post" class="d-flex align-items-center me-2">
+            {% csrf_token %}
+            <div class="d-flex align-items-center me-2">{{ form.as_p }}</div>
+            <button type="submit" class="btn btn-primary btn-sm w-auto">Submit</button>
+        </form>
+    </div>
+   
+  <div class="row">
+    <div class="col-lg-8">
+      <!-- Select Unpaid Order Transaction -->
+       
+  
+    <select id="order-transaction-select" class="form-control">
+        <option value="">Select Transaction </option>
+        {% for transaction in unpaid_orders %}
+        <option value="{{ transaction.random_id }}">{{ transaction.random_id }} /{{transaction.table}}</option>
+        {% endfor %}
+    </select>
+      <div class="card mb-4">
+
+
+        </select>
+        <div class="card-header">
+          <h5 class="card-title mb-0">Menu Selection</h5>
+        </div>
+        <div class="card-body">
+          <div
+            class="d-flex flex-wrap gap-2"
+            id="category-container"
+          >
+            {% for category in categories %}
+            <div id="" class="">
+             <button
+                class="btn btn btn-outline-primary category-card w-100 rounded align-items-center justify-content-center "
+                data-category="{{ category.id }}"
+              >
+                <i class="bi bi-{{ category.icon }} fs-3 mb-2"></i>
+                <span>{{ category.name }}</span>
+              </button>
+            </div>
+            {% endfor %}
+          </div>
+          
+        </div>
+      </div>
+
+          <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Menu Items</h5>
+            <input
+              type="text"
+              id="menu-search"
+              class="form-control form-control-sm"
+              placeholder="Search..."
+              style="max-width: 200px;"
+            />
+          </div>
+          <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4" id="menu-items-container">
+              <!-- Menu items will be dynamically added here -->
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Order Details</h5>
+        </div>
+        <div class="card-body">
+          <form id="order-form" method="post">
+            {% csrf_token %}
+            {% for transaction in unpaid_orders %}
+            <input
+              type="hidden"
+              id="order-id"
+              value="{{ transaction.random_id }}"
+            />
+            {% endfor %}
+
+            <!-- <div class="mb-3">
+              <label for="customer-name" class="form-label"
+                >Customer Name</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="customer-name"
+                value="Fishpoint Customer"
+                required
+              />
+            </div> -->
+
+            <div class="mb-3">
+              <label for="order-type" class="form-label">Order Type</label>
+              <select id="order-type" class="form-select">
+                <option value="Dine In">Dine In</option>
+                <option value="Take Away">Take Away</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select id="status" class="form-select">
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+                <option value="Served">Served</option>
+                <option value="Preparing">Preparing</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="special-notes" class="form-label"
+                >Special Notes</label
+              >
+              <select id="special-notes" class="form-select">
+                <option value="nothing">Nothing</option>
+                <option value="strongly spiced">Strongly spiced</option>
+                <option value="midly spiced">Mildly spiced</option>
+                <option value="chips">Chips</option>
+                <option value="rice">Rice</option>
+                <option value="posho">Posho</option>
+                <option value="rice_posho">Rice & Posho</option>
+                <option value="chips_posho">Chips & Posho</option>
+                <option value="rice_chips">Rice & Chips</option>
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title fs-5 mb-0">Your Order</h5>
+        </div>
+        <div class="card-body">
+          <div id="selected-items-container"></div>
+          <div class="row justify-content-between align-items-center mt-4 gap-4">
+            <!-- <h5 class="mb-0 fs-5 col ">Total: <span id="total-price fw-normal">0.00</span></h5> -->
+            <button type="button" id="submit-orders" class="btn btn-primary rounded fw-normal">
+              <i class="bi bi-wallet me-2"></i> Place Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript">
+    function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    let cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      let cookie = cookies[i].trim();
+      if (cookie.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+document.getElementById("menu-search").addEventListener("input", function () {
+    let filter = this.value.toLowerCase().trim();
+    let items = document.querySelectorAll("#menu-items-container .menu-item");
+
+    items.forEach((item) => {
+      let text = item.innerText.toLowerCase();
+      item.style.display = text.includes(filter) ? "block" : "none";
+    });
+  });
+
+$(document).ready(function () {
+  let selectedItems = {}; // Store selected items across categories
+  let currentOrderId = $("#order-id").val(); // Ensure order ID persists
+
+
+    // Update the order ID when a different transaction is selected
+  $("#order-transaction-select").change(function () {
+    currentOrderId = $(this).val();
+    $("#order-id").val(currentOrderId); // Update the hidden input field
+  });
+
+  $(".category-card").click(function () {
+    let categoryId = $(this).data("category");
+
+    $.ajax({
+      url: "{% url 'load_menu_items' %}",
+      data: { category: categoryId },
+      success: function (data) {
+        data.forEach(function (menuItem) {
+          let existingQuantity = selectedItems[menuItem.id] || "";
+
+          if (!$(`#menu-item-${menuItem.id}`).length) {
+            let menuHtml = `
+              <div class="col-md-4" id="menu-item-${menuItem.id}">
+                <div class="card menu-item-card">
+                  <div class="card-body">
+                    <h5 class="card-title fs-5">${menuItem.name}</h5>
+                    <input type="number" class="form-control quantity-input" 
+                           data-menu-id="${menuItem.id}" min="1" 
+                           placeholder="Quantity" value="${existingQuantity}">
+                  </div>
+                </div>
+              </div>
+            `;
+            // $("#menu-items-container").append(menuHtml);
+            // Prepend the new items so that they appear on top
+            $("#menu-items-container").prepend(menuHtml);
+          }
+        });
+      },
+      error: function () {
+        alert("Failed to load menu items. Please try again.");
+      },
+    });
+  });
+
+  // Save selected quantities when the input changes
+  $(document).on("input", ".quantity-input", function () {
+    let menuItemId = $(this).data("menu-id");
+    selectedItems[menuItemId] = $(this).val();
+  });
+
+  $("#submit-orders").click(function () {
+    let orders = [];
+    $(".quantity-input").each(function () {
+      let quantity = $(this).val();
+      if (quantity > 0) {
+        orders.push({
+          menu_item_id: $(this).data("menu-id"),
+          quantity: quantity,
+        });
+      }
+    });
+
+    if (orders.length === 0) {
+      alert("Please select at least one item to order.");
+      return;
+    }
+
+    let orderDetails = {
+      random_id: currentOrderId, // Keep order ID for continuity
+      customer_name: $("#customer-name").val(),
+      order_type: $("#order-type").val(),
+      status: $("#status").val(),
+      special_notes: $("#special-notes").val(),
+      orders: orders,
+    };
+
+    fetch("{% url 'submit_orders' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: JSON.stringify(orderDetails),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.order_id) {
+          currentOrderId = data.order_id; // Ensure continuity of transaction
+        }
+        if (data.redirect_url) {
+          window.location.href = data.redirect_url;
+        } else {
+          alert(data.message || "Order saved successfully.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("An error occurred while submitting the order.");
+      });
+  });
+});
+
+  </script>
+
+  {% endblock content %}
+</div>

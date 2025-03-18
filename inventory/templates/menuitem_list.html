@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <h4 class="fw-semibold mb-4">Starters</h4>
+            <p>Delightful small bites and lighter fare to begin your meal experience.</p>
+            <h4 class="card-title fw-semibold mb-4">Appetizers</h4>
+            {% for item in menu %}
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <img src="{{item.image_url}}" class="card-img-top" alt="..."
+                        style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{item.name}}</h5>
+                        <p class="card-text">{{item.description}}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,26 @@
+{% extends 'daze.html' %}
+{% load static %}
+
+{% block content %}<!-- templates/reservations/make_reservation.html -->
+<style>
+    .container{
+        color: black;
+        
+    }
+</style>
+<div class="container"> 
+    <div class=" col-5 mx-auto">
+        <h2>Make a Reservation</h2>
+     
+        <br><br>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit Reservation</button>
+        </form>
+        <br><br>
+    </div>
+</div>
+
+
+{% endblock content %}
