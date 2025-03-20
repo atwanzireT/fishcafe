@@ -1,5 +1,4 @@
 # Ignore Django migrations
-*/migrations/
 /migrations/.py
 /env
 /venv
