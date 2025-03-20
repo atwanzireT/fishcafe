@@ -105,12 +105,12 @@ WSGI_APPLICATION = 'fishcafe.wsgi.application'
 
 DATABASES = {
      'default': {
-         'ENGINE': 'django.db.backends.{}'.format(os.environ.get('DATABASE_ENGINE', 'sqlite3')),
-         'NAME': os.environ.get('DATABASE_NAME', 'db.sqlite3'),
-         'USER': os.environ.get('DATABASE_USERNAME', None),
-         'PASSWORD': "",
-         'HOST': os.environ.get('DATABASE_HOST', None),
-         'PORT': "",
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'fishcafe',
+        'USER': 'postgres',
+        'PASSWORD': 'atwanzire',
+        'HOST': 'localhost',
+        'PORT': '',
      }
  }
 
