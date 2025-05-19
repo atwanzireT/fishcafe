@@ -67,36 +67,12 @@ def dashboard(request):
 
 
 
-
-
-# MENU ITEMS VIEW
-@login_required(login_url='/user/login/')
-def menu(request):
-    menu_items = MenuItem.objects.all().select_related('category')
-    return render(request, "menuitem_list.html", {"menu_items": menu_items})
-
-#@@@@@@@@loading categories of menu
 def load_menu_items(request):
-    category_id = request.GET.get('category')
-    menu_items = MenuItem.objects.filter(category_id=category_id).values('id', 'name')
+    search_term = request.GET.get('term', '')  # optional: for search
+    menu_items = MenuItem.objects.filter(name__icontains=search_term).values('id', 'name')[:10]
     return JsonResponse(list(menu_items), safe=False)
 
 
-
-# ADD MENU ITEM VIEW
-@login_required(login_url='/user/login/')
-def add_menu_item(request):
-    if request.method == 'POST':
-        form = MenuItemForm(request.POST)
-        if form.is_valid():
-            menu_item = form.save(commit=False)
-            menu_item.created_by = request.user
-            menu_item.save()
-            return redirect('menu')
-    else:
-        form = MenuItemForm()
-
-    return render(request, 'add_menu_item.html', {'form': form})
 
 # DAILY SPECIALS LIST VIEW
 class DailySpecialListView(LoginRequiredMixin, ListView):
@@ -136,17 +112,14 @@ def order_transaction_payment(request, order_id):
 
     return render(request, 'edit-order-transaction.html', {'form': form, 'order': order})
 
-
-
-# ADD ORDER VIEW
 @login_required(login_url='/user/login/')
 def add_order(request):
     today = localdate()
     # unpaid_orders = OrderTransaction.objects.all()
     unpaid_orders = OrderTransaction.objects.filter(created=today, payment_mode="NO PAYMENT").order_by('-id')
     # last_transaction_order = unpaid_orders.first()  # Get the latest unpaid order
-    categories = Category.objects.all()
-    
+   
+    menu_items = MenuItem.objects.all().values('id', 'name', 'price') 
     if request.method == 'POST':
         form = OrderTransactionForm(request.POST)
         if form.is_valid():
@@ -160,7 +133,8 @@ def add_order(request):
 
     return render(request, 'add_order.html', {
         'form': form,
-        'categories': categories,
+     
+        'all_menu_items': menu_items,
         # 'last_transaction_order': last_transaction_order,
         'unpaid_orders': unpaid_orders,
     })
@@ -244,6 +218,8 @@ def delete_order(request, id):
         return redirect('orders')
     return render(request, 'delete_order.html', {'order': order})
 
+
+@login_required(login_url='/user/login/')
 def update_order_status(request, order_id):
     # Get the specific order by ID or return 404 if not found
     order = get_object_or_404(OrderItem, id=order_id)
@@ -336,6 +312,32 @@ def view_reservations(request):
     reservations = Reservation.objects.all()
     return render(request, 'reservationslists.html', {'reservations':reservations})
 
+
+
+
+#ADMIN
+@login_required(login_url='/user/login/')
+def category(request):
+    form= CategoryForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('dashboard')
+    return render(request, 'add_category.html', {'form':form})
+    
+    
+    
+def add_menu(request):
+    form=MenuForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('dashboard')
+    return render(request, 'add_menu.html', {'form':form})
+
+def search_menu_items(request):
+    query = request.GET.get("q", "")
+    results = MenuItem.objects.filter(name__icontains=query)[:20]
+    data = [{"id": item.id, "name": item.name} for item in results]
+    return JsonResponse(data, safe=False)
 
 
 

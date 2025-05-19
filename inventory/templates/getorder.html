@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block content %}
 <div class="card" id="receipt">
@@ -42,7 +43,7 @@
                                 <tr>
                                     <td>{{ order.menu_item.name }}</td>
                                     <td>{{ order.quantity }}</td>
-                                    <td>{{ order.menu_item.price }}</td>
+                                    <td>{{ order.menu_item.price|intcomma }}</td>
                                 </tr>
                             </tbody>
                         </table>

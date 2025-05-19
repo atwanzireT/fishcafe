@@ -14,7 +14,7 @@ urlpatterns = [
     # Categories and Menu
    
     path('load-menu-items/', views.load_menu_items, name='load_menu_items'),
-    path('menu/', views.menu, name='menulist'),
+ 
     path('daily-specials/', views.DailySpecialListView.as_view(), name='dailyspecial-list'),
 
     # Orders
@@ -43,6 +43,13 @@ urlpatterns = [
     path('export-orders/<str:time_period>/', export_orders_to_csv, name='export_orders'),
     path('paid-orders/', export_paid_order_to_csv, name='paid-orders'),
     path('general-orders/', export_general_order_to_csv, name='general_orders'),
+    
+    
+    #admin
+    path('add/category/', views.category, name = 'add-category'),
+    path('add/menu/', views.add_menu, name='menu'),
+    path("search-menu-items/", views.search_menu_items, name="search_menu_items"),
+    
   
 
 ]

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="card container mt-5">
+  <h2 class="m-2">Liabilities</h2>
+
+  <table class="table table-striped mt-4">
+    <thead>
+      <tr>
+        <th> Name</th>
+        <th>Amount</th>
+        
+        <th>Date Due </th>
+        <th>Actions</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for liability in all_liability %}
+      <tr>
+      
+        <td>{{ liability.name }}</td>
+     
+        <td>Ugx Shs. {{ liability.amount|intcomma }}</td>
+        <td>{{ liability.due_date }}</td>
+      
+        <td>
+        
+        </td>
+      </tr>
+     
+    
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

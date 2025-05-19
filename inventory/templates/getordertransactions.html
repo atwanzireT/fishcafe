@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block content %}
-<div class="" id="receipt">
+<div class="">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-8 mx-auto">
+            <div  id="receipt" class="col-md-8 mx-auto">
                 <div class="card">
                     <div class="card-body">
                         <div>
-                            <h3 class="text-center mb-4">FishPoint Motel</h3>
+                            <h3 class="text-center mb-4">Fish Point Cafe</h3>
                             <div class="row">
                                 <div class="col"></div>
                                 <div class="col"></div>
@@ -43,8 +44,8 @@
                                 <tr>
                                     <td>{{ item.menu_item.name }}</td>
                                     <td>{{ item.quantity }}</td>
-                                    <td>{{ item.menu_item.price }}</td>
-                                    <td>{{ item.total_price }}</td>
+                                    <td>{{ item.menu_item.price|intcomma }}</td>
+                                    <td>{{ item.total_price|intcomma }}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr>
@@ -64,11 +65,8 @@
                 </div>
                 <div class="row">
                     <div class="col-auto">
-                <a href="/manager/print_receipt/{{order.id}}/" class="btn btn-primary no-print">Print Receipt</a>
+                        <button onclick="printReceiptDiv()" class="btn btn-primary no-print">Print Receipt</button>
                     </div>
-                    <div class="col-auto">
-                        <a href="/manager/print_invoice/{{order.id}}/" class="btn btn-secondary no-print">Print Invoice</a>
-                            </div>
                 </div>
             </div>
 
@@ -110,10 +108,28 @@
     }
 
     // Enable button only when amount is entered
-    document.getElementById('amountGiven').addEventListener('input', function() {
+    document.getElementById('amountGiven').addEventListener('input', function () {
         document.querySelector('button[onclick="calculateBalance()"]').disabled = !this.value;
     });
+
+    function printReceiptDiv() {
+        var receiptContent = document.getElementById("receipt").innerHTML;
+        var printWindow = window.open("", "", "height=600,width=800");
+        printWindow.document.write('<html><head><title>Print Receipt</title>');
+        printWindow.document.write('<style>');
+        printWindow.document.write('@media print { body { font-family: Arial; } table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #000; padding: 5px; } .no-print { display: none; } }');
+        printWindow.document.write('</style>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write(receiptContent);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }
 </script>
+
+
 {% endblock content %}
 
 {% block extra_css %}

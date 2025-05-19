@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load humanize %}
+
+{% block content %}
+<div class="financial-report container py-5">
+  {% if messages %}
+    <div class="messages mb-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <header class="text-center mb-5">
+    <h1 class="display-4 fw-bold">Financial Report</h1>
+    <p class="text-muted lead">{{ start_date|date:"F d, Y" }} to {{ end_date|date:"F d, Y" }}</p>
+  </header>
+
+  <!-- Period Selector -->
+  <div class="card shadow-sm mb-5">
+    <div class="card-body">
+      <form method="get" class="row g-3 align-items-center justify-content-center">
+        <div class="col-auto">
+          <label for="month" class="col-form-label">Month:</label>
+        </div>
+        <div class="col-auto">
+          <select name="month" id="month" class="form-select">
+            {% for m in 1|to:12 %}
+              <option value="{{ m }}" {% if m == selected_month %}selected{% endif %}>{{ m|month_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto">
+          <label for="year" class="col-form-label">Year:</label>
+        </div>
+        <div class="col-auto">
+          <select name="year" id="year" class="form-select">
+            {% for y in 2020|to:2030 %}
+              <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Generate Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Financial Summary Cards -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-primary border-top border-5" style="height: 100px;">
+        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2 h-100" style="font-size: 1rem;">
+          <div class="fw-bold text-primary mb-1" style="font-size: 1rem;">{{ income.total_revenue|currency }}</div>
+          <h3 class="fs-6 text-muted mb-0">Total Revenue</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-danger border-top border-5" style="height: 100px;">
+        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2 h-100" style="font-size: 1rem;">
+          <div class="fw-bold text-danger mb-1" style="font-size: 1rem;">{{ income.total_expenses|currency }}</div>
+          <h3 class="fs-6 text-muted mb-0">Total Expenses</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm {% if income.net_profit > 0 %}border-success{% else %}border-warning{% endif %} border-top border-5" style="height: 100px;">
+        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2 h-100" style="font-size: 1rem;">
+          <div class="fw-bold {% if income.net_profit > 0 %}text-success{% else %}text-warning{% endif %} mb-1" style="font-size: 1rem;">
+            {{ income.net_profit|currency }}
+          </div>
+          <h3 class="fs-6 text-muted mb-0">Net Profit</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-info border-top border-5" style="height: 100px;">
+        <div class="card-body d-flex flex-column justify-content-center align-items-center p-2 h-100" style="font-size: 1rem;">
+          <div class="fw-bold text-info mb-1" style="font-size: 1rem;">{{ profit_margin|floatformat:1 }}%</div>
+          <h3 class="fs-5 text-muted mb-0">Profit Margin</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <!-- Income Statement Section -->
+    <div class="col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-dark text-white">
+          <h2 class="h5 mb-0 text-white">Income Statement</h2>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <tbody>
+              <!-- Revenue breakdown -->
+              <tr class="table-primary">
+                <th colspan="2">Revenue Breakdown</th>
+              </tr>
+              {% for category, amount in income.revenue_by_category.items %}
+                {% if amount > 0 %}
+                <tr>
+                  <td>{{ category }}:</td>
+                  <td class="text-end">{{ amount|currency }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+              <tr class="fw-bold">
+                <td>Total Revenue:</td>
+                <td class="text-end">{{ income.total_revenue|currency }}</td>
+              </tr>
+              
+              <!-- Expense breakdown -->
+              <tr class="table-danger">
+                <th colspan="2">Expense Breakdown</th>
+              </tr>
+              {% for category, amount in income.expense_by_category.items %}
+                {% if amount > 0 %}
+                <tr>
+                  <td>{{ category }}:</td>
+                  <td class="text-end">{{ amount|currency }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+              <tr class="fw-bold">
+                <td>Total Expenses:</td>
+                <td class="text-end">{{ income.total_expenses|currency }}</td>
+              </tr>
+              
+              <!-- Net profit -->
+              <tr class="table-{% if income.net_profit > 0 %}success{% else %}warning{% endif %} fw-bold">
+                <td>Net Profit:</td>
+                <td class="text-end">{{ income.net_profit|currency }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Balance Sheet Section -->
+    <div class="col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-dark text-white">
+          <h2 class="h5 mb-0 text-white">Balance Sheet</h2>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <tbody>
+              <tr>
+                <th>Assets:</th>
+                <td class="text-end">{{ balance.assets|currency }}</td>
+              </tr>
+              <tr>
+                <th>Liabilities:</th>
+                <td class="text-end">{{ balance.liabilities|currency }}</td>
+              </tr>
+              <tr class="table-active fw-bold">
+                <th>Equity:</th>
+                <td class="text-end">{{ balance.equity|currency }}</td>
+              </tr>
+              <tr>
+                <th>Debt Ratio:</th>
+                <td class="text-end">
+                  {{ debt_ratio|floatformat:2 }}
+                  <span class="badge {% if debt_ratio < 0.4 %}bg-success{% elif debt_ratio < 0.6 %}bg-warning{% else %}bg-danger{% endif %} ms-2">
+                    {% if debt_ratio < 0.4 %}Low{% elif debt_ratio < 0.6 %}Moderate{% else %}High{% endif %}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Performance Indicators -->
+  <div class="row g-4 mb-5">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h2 class="h5 mb-0">Financial Analysis</h2>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-{% if income.net_profit > 0 %}success{% else %}warning{% endif %} border-0 mb-4">
+            <h5 class="alert-heading">Performance Summary</h5>
+            <p class="mb-0">
+              {% if income.net_profit > 0 %}
+                Your business showed a profit of {{ income.net_profit|currency }} for this period, with a profit margin of {{ profit_margin|floatformat:1 }}%.
+              {% else %}
+                Your business reported a loss of {{ income.net_profit|absolute|currency }} for this period.
+              {% endif %}
+            </p>
+          </div>
+
+          <!-- Additional KPIs -->
+          <div class="row g-4 mb-4">
+            {% if revpar is not None %}
+            <div class="col-md-3">
+              <div class="card bg-light border-0">
+                <div class="card-body text-center">
+                  <h5 class="text-muted">RevPAR</h5>
+                  <h3 class="mb-0">{{ revpar|currency }}</h3>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if adr is not None %}
+            <div class="col-md-3">
+              <div class="card bg-light border-0">
+                <div class="card-body text-center">
+                  <h5 class="text-muted">ADR</h5>
+                  <h3 class="mb-0">{{ adr|currency }}</h3>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Recommendations -->
+          <div class="card bg-light border-0">
+            <div class="card-body">
+              <h5 class="card-title">Recommendations</h5>
+              <ul class="list-group list-group-flush">
+                {% for item in recommendations %}
+                  <li class="list-group-item bg-transparent px-0 py-2 border-light">
+                    <i class="bi bi-check-circle-fill text-primary me-2"></i>{{ item }}
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-6 justify-center">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-dark">
+          <h4 class="h5 mb-0 text-white">Financial Overview</h4>
+        </div>
+        <div class="card-body">
+          <canvas id="profitChart" height="250"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 justify-center">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-dark">
+          <h4 class="h5 mb-0 text-white">Revenue Distribution</h4>
+        </div>
+        <div class="card-body">
+          <canvas id="revenueChart" height="250"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Required JS imports -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Financial Overview Chart
+  const ctxProfit = document.getElementById('profitChart').getContext('2d');
+  const profitChart = new Chart(ctxProfit, {
+    type: 'bar',
+    data: {
+      labels: ['Revenue', 'Expenses', 'Net Profit'],
+      datasets: [{
+        label: 'Amount (Shs.)',
+        data: [
+          {{ income.total_revenue|default:0 }},
+          {{ income.total_expenses|default:0 }},
+          {{ income.net_profit|default:0 }}
+        ],
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',   // Revenue - Blue
+          'rgba(255, 99, 132, 0.7)',   // Expenses - Red
+          '{% if income.net_profit > 0 %}rgba(75, 192, 192, 0.7){% else %}rgba(255, 193, 7, 0.7){% endif %}'  // Profit - Teal or yellow for loss
+        ],
+        borderColor: [
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 99, 132, 1)',
+          '{% if income.net_profit > 0 %}rgba(75, 192, 192, 1){% else %}rgba(255, 193, 7, 1){% endif %}'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: 'Financial Summary ({{ selected_month|month_name }} {{ selected_year }})',
+          font: {
+            size: 16
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return 'Shs. ' + value.toLocaleString();
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Revenue Distribution Chart
+  const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+  const revenueChart = new Chart(ctxRevenue, {
+    type: 'pie',
+    data: {
+      labels: [
+        {% for category, amount in income.revenue_by_category.items %}
+          {% if amount > 0 %}'{{ category }}',{% endif %}
+        {% endfor %}
+      ],
+      datasets: [{
+        data: [
+          {% for category, amount in income.revenue_by_category.items %}
+            {% if amount > 0 %}{{ amount }},{% endif %}
+          {% endfor %}
+        ],
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(255, 205, 86, 0.7)',
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(255, 159, 64, 0.7)'
+        ],
+        borderColor: [
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 99, 132, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 205, 86, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'right'
+        },
+        title: {
+          display: true,
+          text: 'Revenue by Category',
+          font: {
+            size: 16
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              let label = context.label || '';
+              if (label) {
+                label += ': ';
+              }
+              label += 'Shs. ' + context.raw.toLocaleString();
+              return label;
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}
