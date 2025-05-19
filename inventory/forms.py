@@ -1,5 +1,5 @@
 from django import forms
-from .models import  OrderTransaction, OrderItem
+from .models import  OrderTransaction, OrderItem, Category
 from .models import OrderItem, MenuItem, Category, DiningArea, Table
 
 
@@ -137,3 +137,28 @@ class OrderTransactionPaymentForm(forms.ModelForm):
             'payment_mode': forms.Select(attrs={'class': 'form-control'}),
             'transaction_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Leave Blank if Cash Payment'}),
         }
+        
+        
+#ADMIN
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields =['name', 'description', 'grouping']
+        widgets ={
+            'name':forms.TextInput(attrs={'class':'form-control'}),
+            'description':forms.Textarea(attrs={'class':'form-control'}),
+            'grouping':forms.Select(attrs={'class':'form-control'}),
+        }  
+                
+class MenuForm(forms.ModelForm):
+    class Meta:
+        model = MenuItem
+        fields =['name','category','price', 'description']
+        widgets ={
+            'name':forms.TextInput(attrs={'class':'form-control'}),
+            'category':forms.Select(attrs={'class':'form-control'}),
+            'description':forms.Textarea(attrs={'class':'form-control'}),
+            'price':forms.NumberInput(attrs={'class': 'form-control'}),
+        }                  
+                

@@ -21,6 +21,7 @@ class Category(models.Model):
     grouping = models.CharField(max_length=100, choices=GROUPING_CHOICES)
 
     def __str__(self):
+        
         return self.name
 
 class MenuItem(models.Model):
@@ -63,6 +64,7 @@ class OrderTransaction(models.Model):
         ("CASH", "CASH"),
         ("MOMO PAY", "MOMO PAY"),
         ("AIRTEL PAY", "AIRTEL PAY"),
+        ("BANK CARD", "BANK CARD"),
     )
     random_id = models.CharField(max_length=6, unique=True, editable=False, default=generate_random_id)
     customer_name = models.CharField(max_length=255, blank=True, null=True, default="FishPoint Customer")

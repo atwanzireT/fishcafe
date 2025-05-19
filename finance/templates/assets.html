@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="card container mt-5">
+  <h2 class="m-2">Assets</h2>
+
+  <table class="table table-striped mt-4">
+    <thead>
+      <tr>
+        <th> Name</th>
+        <th>Location</th>
+        <th>Value</th>
+        <th>DateAcquired </th>
+        <th>Actions</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for asset in assets_list %}
+      <tr>
+      
+        <td>{{ asset.name }}</td>
+        <td>{{ asset.location }}</td>
+        <td>Ugx Shs. {{ asset.value|intcomma }}</td>
+        <td>{{ asset.date_acquired }}</td>
+      
+        <td>
+        
+        </td>
+      </tr>
+     
+    
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+SECRET_KEY = 'django-insecure-uxkz-bvpq9boe&d611*w9o5vg1$bvtor-)y1@ur*ho52ocx(pt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -45,10 +43,13 @@ INSTALLED_APPS = [
     'web',
     'kitchen',
     'store',
+    'finance',
+    'otherPackages',
     
     # 3rd apps
     'rest_framework',
     'rest_framework.authtoken',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -93,26 +94,24 @@ WSGI_APPLICATION = 'fishcafe.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'digitalchronicle_fishcafeDB',
+#         'USER': 'digitalchronicle_atwanzire',
+#         'PASSWORD': 'Bamwite2broz',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
 #     }
 # }
-
-
-DATABASES = {
-     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'fishcafe',
-        'USER': 'postgres',
-        'PASSWORD': 'atwanzire',
-        'HOST': 'localhost',
-        'PORT': '',
-     }
- }
 
 
 # Password validation
