@@ -257,7 +257,7 @@ def orderTransactions(request):
 #CLEARED ORDERS
 @login_required(login_url="/user/login/")
 def clearedTransactions(request):
-    orders_list = OrderTransaction.objects.filter(payment_mode__in=["CASH", "MOMO PAY", "AIRTEL PAY"]).order_by('-id')
+    orders_list = OrderTransaction.objects.filter(payment_mode__in=["CASH", "MOMO PAY", "AIRTEL PAY", "BANK CARD"]).order_by('-id')
     paginator = Paginator(orders_list, 10)
     
     # Get the page number from the request
