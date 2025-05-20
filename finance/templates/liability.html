@@ -20,7 +20,7 @@
       {% for liability in all_liability %}
       <tr>
       
-        <td>{{ liability.name }}</td>
+        <td>{{ liability.description }}</td>
      
         <td>Ugx Shs. {{ liability.amount|intcomma }}</td>
         <td>{{ liability.due_date }}</td>
