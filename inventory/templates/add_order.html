@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
+
 {% block extra_css %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
@@ -43,8 +44,9 @@
 {% block content %}
 <div class="container mt-4">
   <div class="row g-4">
+    <!-- Left Column -->
     <div class="col-lg-8">
-      <!-- Top Form -->
+      <!-- Start Transaction Form -->
       <div class="card p-3 mb-3">
         <form method="post" class="row g-3">
           {% csrf_token %}
@@ -60,18 +62,21 @@
             <button type="submit" class="btn btn-success w-100">Start</button>
           </div>
         </form>
+        <!-- Existing Transactions -->
         <div class="mt-3">
           <label for="order-transaction-select" class="form-label">Select Transaction</label>
           <select id="order-transaction-select" class="form-select">
             <option value="">Select Transaction</option>
             {% for transaction in unpaid_orders %}
-            <option value="{{ transaction.random_id }}">{{ transaction.table }}/{{ transaction.random_id }}</option>
+            <option value="{{ transaction.random_id }}">
+              {{ transaction.customer_name }} - {{ transaction.table }} - {{ transaction.random_id }}
+            </option>
             {% endfor %}
           </select>
         </div>
       </div>
 
-      <!-- Menu Items -->
+      <!-- Menu Items Section -->
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Menu Items</h5>
@@ -85,7 +90,15 @@
                 <div class="card-body">
                   <h5 class="card-title">{{ item.name }}</h5>
                   <p class="text-muted mb-2">Ugx {{ item.price|intcomma }}</p>
-                  <input type="number" class="form-control quantity-input" data-menu-id="{{ item.id }}" data-price="{{ item.price }}" min="1" placeholder="Quantity" />
+                  <input
+                    type="number"
+                    class="form-control quantity-input"
+                    data-menu-id="{{ item.id }}"
+                    data-price="{{ item.price }}"
+                    min="1"
+                    placeholder="Quantity"
+                    aria-label="Quantity for {{ item.name }}"
+                  />
                 </div>
               </div>
             </div>
@@ -96,9 +109,9 @@
       </div>
     </div>
 
-    <!-- Order Details Sidebar -->
+    <!-- Right Column -->
     <div class="col-lg-4">
-      <!-- Order Form Card -->
+      <!-- Order Details -->
       <div class="card mb-4">
         <div class="card-header"><h5 class="mb-0">Order Details</h5></div>
         <div class="card-body">
@@ -124,9 +137,9 @@
             <div class="mb-3">
               <label for="special-notes" class="form-label">Special Notes</label>
               <select id="special-notes" class="form-select">
-                <option value="nothing">nothing</option>
-                <option value="strongly spiced">Strongly spiced</option>
-                <option value="midly spiced">Mildly spiced</option>
+                <option value="nothing">Nothing</option>
+                <option value="strongly spiced">Strongly Spiced</option>
+                <option value="midly spiced">Mildly Spiced</option>
                 <option value="chips">Chips</option>
                 <option value="rice">Rice</option>
                 <option value="posho">Posho</option>
@@ -138,7 +151,7 @@
           </form>
         </div>
       </div>
-  
+
       <!-- Order Summary -->
       <div class="card">
         <div class="card-header"><h5 class="mb-0">Your Order</h5></div>
@@ -153,9 +166,7 @@
             </button>
           </div>
         </div>
-
       </div>
-            
     </div>
   </div>
 </div>
@@ -276,18 +287,15 @@
         },
         body: JSON.stringify(orderDetails),
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.redirect_url) {
-            window.location.href = data.redirect_url;
-          } else {
-            alert(data.message || "Order placed successfully.");
-          }
-        })
-        .catch((err) => {
-          console.error("Error:", err);
-          alert("An error occurred while submitting the order.");
-        });
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.redirect_url) {
+          window.location.href = data.redirect_url;
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
     });
   });
 </script>

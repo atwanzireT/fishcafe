@@ -41,29 +41,34 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.http import JsonResponse
 
-today = timezone.now().date()
+
+today = timezone.localdate()
+
+# === DASHBOARD ===
+
 
 @login_required(login_url='/user/login/')
 def dashboard(request):
-    # Ensure 'today' is in the correct timezone (timezone-aware)
-    start_of_today = timezone.make_aware(datetime.combine(today, datetime.min.time()))
-    end_of_today = timezone.make_aware(datetime.combine(today + timedelta(days=1), datetime.min.time()))
-    
-  
-    orderTodayCount = OrderItem.objects.filter(order_date__gte=start_of_today, order_date__lt=end_of_today).count()
-    orderCount = OrderItem.objects.all().count()
-    today_total_amount = OrderItem.objects.filter(order_date__gte=start_of_today, order_date__lt=end_of_today).aggregate(total=Sum('total_price'))['total'] or 0
-    orders = OrderItem.objects.all().order_by('-order_date')[:5]
+    start_of_today = timezone.make_aware(
+        datetime.combine(today, datetime.min.time()))
+    end_of_today = timezone.make_aware(datetime.combine(
+        today + timedelta(days=1), datetime.min.time()))
 
-    # Pass data to the template
-    context = {
+    orderTodayCount = OrderItem.objects.filter(
+        order_date__range=(start_of_today, end_of_today)).count()
+    orderCount = OrderItem.objects.count()
+    today_total_amount = OrderItem.objects.filter(order_date__range=(
+        start_of_today, end_of_today)).aggregate(total=Sum('total_price'))['total'] or 0
+    orders = OrderItem.objects.select_related(
+        'menu_item').order_by('-order_date')[:5]
+
+    return render(request, "dashboard.html", {
         "orderTodayCount": orderTodayCount,
         "orderCount": orderCount,
         "orders": orders,
         "today_total_amount": today_total_amount,
-    }
+    })
 
-    return render(request, "dashboard.html", context)
 
 
 
