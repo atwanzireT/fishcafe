@@ -40,7 +40,8 @@ import json
 from django.shortcuts import render
 from django.utils import timezone
 from django.http import JsonResponse
-
+import pytz
+from datetime import datetime, time, timedelta
 
 today = timezone.localdate()
 
@@ -49,16 +50,30 @@ today = timezone.localdate()
 
 @login_required(login_url='/user/login/')
 def dashboard(request):
-    start_of_today = timezone.make_aware(
-        datetime.combine(today, datetime.min.time()))
-    end_of_today = timezone.make_aware(datetime.combine(
-        today + timedelta(days=1), datetime.min.time()))
+    # Replace 'Africa/Kampala' with your actual local timezone if different
+    local_tz = pytz.timezone('Africa/Kampala')  # or any timezone you need
 
+    now_local = timezone.now().astimezone(local_tz)
+    today_local = now_local.date()
+
+    # Set start time to 6:00 AM local time
+    start_local = local_tz.localize(
+        datetime.combine(today_local, time(6, 0, 0)))
+    # Set end time to 11:59 PM local time
+    end_local = local_tz.localize(
+        datetime.combine(today_local, time(23, 59, 59)))
+
+    # Convert to UTC (server timezone for consistency in DB queries)
+    start_utc = start_local.astimezone(pytz.UTC)
+    end_utc = end_local.astimezone(pytz.UTC)
+
+    # Get order counts and total sales between 6:00 AM and 11:59 PM
     orderTodayCount = OrderItem.objects.filter(
-        order_date__range=(start_of_today, end_of_today)).count()
+        order_date__range=(start_utc, end_utc)).count()
     orderCount = OrderItem.objects.count()
-    today_total_amount = OrderItem.objects.filter(order_date__range=(
-        start_of_today, end_of_today)).aggregate(total=Sum('total_price'))['total'] or 0
+    today_total_amount = OrderItem.objects.filter(order_date__range=(start_utc, end_utc))\
+        .aggregate(total=Sum('total_price'))['total'] or 0
+
     orders = OrderItem.objects.select_related(
         'menu_item').order_by('-order_date')[:5]
 
@@ -68,6 +83,29 @@ def dashboard(request):
         "orders": orders,
         "today_total_amount": today_total_amount,
     })
+
+
+# @login_required(login_url='/user/login/')
+# def dashboard(request):
+#     start_of_today = timezone.make_aware(
+#         datetime.combine(today, datetime.min.time()))
+#     end_of_today = timezone.make_aware(datetime.combine(
+#         today + timedelta(days=1), datetime.min.time()))
+
+#     orderTodayCount = OrderItem.objects.filter(
+#         order_date__range=(start_of_today, end_of_today)).count()
+#     orderCount = OrderItem.objects.count()
+#     today_total_amount = OrderItem.objects.filter(order_date__range=(
+#         start_of_today, end_of_today)).aggregate(total=Sum('total_price'))['total'] or 0
+#     orders = OrderItem.objects.select_related(
+#         'menu_item').order_by('-order_date')[:5]
+
+#     return render(request, "dashboard.html", {
+#         "orderTodayCount": orderTodayCount,
+#         "orderCount": orderCount,
+#         "orders": orders,
+#         "today_total_amount": today_total_amount,
+#     })
 
 
 

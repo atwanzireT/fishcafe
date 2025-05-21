@@ -11,28 +11,21 @@
         </div>
 
         <!-- Filter Form -->
-        <form method="get" class="row g-3 align-items-end mb-4">
-            <div class="col-md-3">
-                <label for="month" class="form-label">Month</label>
-                <select name="month" id="month" class="form-select">
-                    {% for m in 1|to:12 %}
-                        <option value="{{ m }}" {% if m|stringformat:"s" == selected_month %}selected{% endif %}>{{ m }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="year" class="form-label">Year</label>
-                <select name="year" id="year" class="form-select">
-                    <option value="">--Select Year--</option>
-                    {% for y in 2023|get_range:2031 %}
-                        <option value="{{ y }}" {% if y|stringformat:"s" == selected_year %}selected{% endif %}>{{ y }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Filter</button>
-            </div>
-        </form>
+<!-- Filter Form -->
+<form method="get" class="row g-3 align-items-end mb-4">
+    <div class="col-md-4">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+    </div>
+    <div class="col-md-4">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+</form>
+
 
         <!-- Revenue Table -->
         <div class="table-responsive">
@@ -74,7 +67,8 @@
             <ul class="pagination justify-content-center">
                 {% if revenue_list.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?month={{ selected_month }}&year={{ selected_year }}&page={{ revenue_list.previous_page_number }}">Previous</a>
+                        <a class="page-link" href="?start_date={{ start_date }}&end_date={{ end_date }}&page={{ revenue_list.previous_page_number }}">Previous</a>
+
                     </li>
                 {% endif %}
 
@@ -83,12 +77,12 @@
                 </li>
 
                 {% if revenue_list.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?month={{ selected_month }}&year={{ selected_year }}&page={{ revenue_list.next_page_number }}">Next</a>
-                    </li>
-                {% endif %}
+                <li class="page-item">
+                    <a class="page-link" href="?start_date={{ start_date }}&end_date={{ end_date }}&page={{ revenue_list.next_page_number }}">Next</a>
+                </li>
+            {% endif %}
             </ul>
         </nav>
     </div>
 </div>
-{% endblock content %}
+{% endblock  %}

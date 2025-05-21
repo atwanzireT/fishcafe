@@ -1,0 +1,596 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
+<style>
+  body {
+    background: linear-gradient(to bottom right, #e0e7ff, #c7d2fe);
+    min-height: 100vh;
+  }
+  .card {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 1rem;
+  }
+  .form-label {
+    font-weight: 500;
+  }
+  .form-control, .form-select {
+    border-radius: 0.5rem;
+  }
+  #submit-orders {
+    font-weight: 500;
+  }
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  #selected-items-container span {
+    font-size: 0.95rem;
+  }
+  .table-sm.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    cursor: pointer;
+  }
+  .sticky-top {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .quantity-input {
+    max-width: 60px;
+    text-align: center;
+    margin: 0;
+    display: inline-block;
+  }
+  .action-buttons {
+    display: flex;
+    align-items: center;
+  }
+  .action-buttons button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .category-pills {
+    white-space: nowrap;
+    overflow-x: auto;
+    padding: 0.5rem 1rem;
+    scrollbar-width: thin;
+  }
+  .category-pills::-webkit-scrollbar {
+    height: 4px;
+  }
+  .category-pills::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 4px;
+  }
+  .category-pills .btn {
+    margin-right: 0.5rem;
+    border-radius: 30px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  .category-pills .btn.active {
+    background-color: #0d6efd;
+    color: white;
+  }
+  .menu-item.selected {
+    background-color: rgba(13, 110, 253, 0.08);
+  }
+  .quick-add {
+    padding: 0.1rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 30px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .menu-item:hover .quick-add {
+    opacity: 1;
+  }
+  .cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .split-view {
+    display: flex;
+    height: calc(100vh - 180px);
+  }
+  .menu-section {
+    flex: 1;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .menu-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .cart-section {
+    width: 320px;
+    margin-left: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .cart-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .summary-section {
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 1rem;
+  }
+  .category-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  @media (max-width: 991.98px) {
+    .split-view {
+      flex-direction: column;
+      height: auto;
+    }
+    .cart-section {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 1rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row g-4">
+    <div class="col-12">
+      <!-- Quick Transaction Panel -->
+      <div class="card mb-4">
+        <div class="card-body py-3">
+          <div class="row align-items-center">
+            <div class="col-md-5">
+              <div class="d-flex align-items-center">
+                <label for="quick-transaction" class="form-label mb-0 me-2">Quick Start:</label>
+                <select id="quick-transaction" class="form-select form-select-sm">
+                  <option value="">New Order</option>
+                  {% for transaction in unpaid_orders %}
+                  <option value="{{ transaction.random_id }}">
+                    #{{ transaction.random_id|slice:":6" }} - {{ transaction.customer_name }} - Table {{ transaction.table }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="d-flex align-items-center">
+                <label for="order-type" class="form-label mb-0 me-2">Type:</label>
+                <select id="order-type" class="form-select form-select-sm">
+                  <option value="Dine In">Dine In</option>
+                  <option value="Take Away">Take Away</option>
+                </select>
+                <label for="quick-table" class="form-label mb-0 ms-3 me-2">Table:</label>
+                <select id="quick-table" class="form-select form-select-sm">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button id="start-new-order" class="btn btn-sm btn-primary w-100">Start Order</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Split View for Menu and Cart -->
+  <div class="split-view">
+    <!-- Menu Section -->
+    <div class="menu-section card">
+      <div class="card-header p-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0">Menu Items</h5>
+          <div class="d-flex align-items-center">
+            <i class="bi bi-search text-muted me-2"></i>
+            <input type="text" id="menu-search" class="form-control form-control-sm" placeholder="Search..." style="width: 160px" />
+          </div>
+        </div>
+        
+        <!-- Category Pills -->
+        <div class="category-pills">
+          <button class="btn btn-sm btn-light active" data-category="all">All Items</button>
+          <button class="btn btn-sm btn-light" data-category="food">
+            <span class="category-indicator" style="background-color: #28a745;"></span>Food
+          </button>
+          <button class="btn btn-sm btn-light" data-category="drinks">
+            <span class="category-indicator" style="background-color: #007bff;"></span>Drinks
+          </button>
+          <button class="btn btn-sm btn-light" data-category="sides">
+            <span class="category-indicator" style="background-color: #fd7e14;"></span>Sides
+          </button>
+          <button class="btn btn-sm btn-light" data-category="desserts">
+            <span class="category-indicator" style="background-color: #e83e8c;"></span>Desserts
+          </button>
+        </div>
+      </div>
+      
+      <div class="menu-body">
+        <table class="table table-hover table-sm mb-0">
+          <thead class="sticky-top bg-white">
+            <tr>
+              <th style="width: 55%" class="ps-3">Item</th>
+              <th style="width: 25%" class="text-end">Price</th>
+              <th style="width: 20%" class="text-center pe-3">Action</th>
+            </tr>
+          </thead>
+          <tbody id="menu-items-container">
+            {% for item in all_menu_items %}
+            <tr class="menu-item" data-name="{{ item.name|lower }}" data-price="{{ item.price }}" data-category="food">
+              <td class="align-middle ps-3">
+                <span class="fw-medium">{{ item.name }}</span>
+                <button class="btn btn-sm btn-outline-primary quick-add ms-2">+1</button>
+              </td>
+              <td class="align-middle text-end">
+                <span class="text-muted">Ugx {{ item.price|intcomma }}</span>
+              </td>
+              <td class="align-middle text-center pe-3">
+                <div class="action-buttons">
+                  <button class="btn btn-sm btn-outline-secondary me-1 decrease-item" data-menu-id="{{ item.id }}">−</button>
+                  <input
+                    type="number"
+                    class="form-control form-control-sm quantity-input"
+                    data-menu-id="{{ item.id }}"
+                    data-price="{{ item.price }}"
+                    min="0"
+                    value="0"
+                    aria-label="Quantity for {{ item.name }}"
+                  />
+                  <button class="btn btn-sm btn-outline-primary ms-1 increase-item" data-menu-id="{{ item.id }}">+</button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div id="no-results" class="py-4 text-muted text-center" style="display: none;">No matching menu items.</div>
+      </div>
+    </div>
+
+    <!-- Cart Section -->
+    <div class="cart-section card">
+      <div class="card-header">
+        <h5 class="mb-0">Current Order</h5>
+        <div class="d-flex mt-2">
+          <small id="customer-display" class="text-muted">New customer</small>
+          <small class="text-muted mx-2">|</small>
+          <small id="table-display" class="text-muted">Table: -</small>
+        </div>
+      </div>
+      <div class="cart-body p-3">
+        <div id="selected-items-container">
+          <div class="text-center text-muted py-4">
+            <i class="bi bi-cart3 fs-1"></i>
+            <p class="mt-2">Your cart is empty</p>
+            <small>Add items from the menu</small>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer p-3">
+        <div class="summary-section">
+          <div class="mb-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="add-special-notes">
+              <label class="form-check-label" for="add-special-notes">Add special notes</label>
+            </div>
+            <select id="special-notes" class="form-select form-select-sm mt-2" style="display: none;">
+              <option value="nothing">Nothing</option>
+              <option value="strongly spiced">Strongly Spiced</option>
+              <option value="midly spiced">Mildly Spiced</option>
+              <option value="chips">Chips</option>
+              <option value="rice">Rice</option>
+              <option value="posho">Posho</option>
+              <option value="rice_posho">Rice & Posho</option>
+              <option value="chips_posho">Chips & Posho</option>
+              <option value="rice_chips">Rice & Chips</option>
+            </select>
+          </div>
+          <div class="d-flex justify-content-between fw-bold mb-3">
+            <span>Total:</span>
+            <span>Ugx <span id="grand-total">0</span></span>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="button" id="submit-orders" class="btn btn-primary" disabled>
+              <i class="bi bi-send me-2"></i>Place Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  let selectedItems = {};
+  let currentOrderId = "";
+  let isNewOrder = true;
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      document.cookie.split(";").forEach(function (cookie) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        }
+      });
+    }
+    return cookieValue;
+  }
+
+  function updateSelectedItems() {
+    const container = $("#selected-items-container");
+    container.empty();
+    let total = 0;
+    let itemCount = 0;
+
+    if (Object.keys(selectedItems).length === 0) {
+      container.html(`
+        <div class="text-center text-muted py-4">
+          <i class="bi bi-cart3 fs-1"></i>
+          <p class="mt-2">Your cart is empty</p>
+          <small>Add items from the menu</small>
+        </div>
+      `);
+      $("#submit-orders").prop("disabled", true);
+    } else {
+      $("#submit-orders").prop("disabled", false);
+      
+      for (const [menuId, data] of Object.entries(selectedItems)) {
+        const itemName = $(`.quantity-input[data-menu-id="${menuId}"]`)
+          .closest(".menu-item")
+          .find("td:first-child span")
+          .text();
+        const quantity = parseInt(data.quantity) || 0;
+        const price = parseFloat(data.price) || 0;
+        const itemTotal = price * quantity;
+        total += itemTotal;
+        itemCount += quantity;
+
+        container.append(`
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <div class="fw-medium">${itemName}</div>
+              <div class="text-muted small">Ugx ${price.toLocaleString()} × ${quantity}</div>
+            </div>
+            <div class="d-flex align-items-center">
+              <span class="me-3">Ugx ${itemTotal.toLocaleString()}</span>
+              <button class="btn btn-sm btn-outline-danger remove-item" data-menu-id="${menuId}">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        `);
+      }
+    }
+
+    $("#grand-total").text(total.toLocaleString());
+    
+    // Update quantity inputs
+    for (const menuId in selectedItems) {
+      $(`.quantity-input[data-menu-id="${menuId}"]`).val(selectedItems[menuId].quantity);
+    }
+    
+    // Update cart badge
+    if (itemCount > 0) {
+      $("#cart-badge").text(itemCount).show();
+    } else {
+      $("#cart-badge").hide();
+    }
+  }
+
+  function updateItemQuantity(menuId, quantity) {
+    const $input = $(`.quantity-input[data-menu-id="${menuId}"]`);
+    const price = $input.data("price");
+    
+    if (quantity <= 0) {
+      delete selectedItems[menuId];
+      $input.val(0);
+      $input.closest(".menu-item").removeClass("selected");
+    } else {
+      selectedItems[menuId] = {
+        quantity: quantity,
+        price: price
+      };
+      $input.val(quantity);
+      $input.closest(".menu-item").addClass("selected");
+    }
+    
+    updateSelectedItems();
+  }
+
+  $(document).ready(function () {
+    // Initialize
+    updateSelectedItems();
+    
+    // Special notes toggle
+    $("#add-special-notes").change(function() {
+      $("#special-notes").toggle(this.checked);
+    });
+    
+    // Transaction selection
+    $("#quick-transaction").change(function () {
+      currentOrderId = $(this).val();
+      isNewOrder = currentOrderId === "";
+      
+      if (!isNewOrder) {
+        // For demonstration - would need to be populated from actual order data
+        const selectedOption = $(this).find("option:selected");
+        const customerName = selectedOption.text().split(" - ")[1];
+        const tableNumber = selectedOption.text().split("Table ")[1];
+        
+        $("#customer-display").text(customerName);
+        $("#table-display").text(`Table: ${tableNumber}`);
+      } else {
+        $("#customer-display").text("New customer");
+        $("#table-display").text("Table: -");
+      }
+    });
+    
+    // Start new order button
+    $("#start-new-order").click(function() {
+      if (isNewOrder) {
+        // This would need to be implemented to create a new order in the backend
+        const tableNumber = $("#quick-table").val();
+        $("#customer-display").text("New customer");
+        $("#table-display").text(`Table: ${tableNumber}`);
+      }
+    });
+    
+    // Menu search
+    $("#menu-search").on("input", function () {
+      const filter = $(this).val().toLowerCase().trim();
+      let visibleCount = 0;
+
+      $(".menu-item").each(function () {
+        const name = $(this).data("name") || "";
+        const isVisible = name.includes(filter);
+        $(this).toggle(isVisible);
+        if (isVisible) visibleCount++;
+      });
+
+      $("#no-results").toggle(visibleCount === 0);
+    });
+    
+    // Category filter
+    $(".category-pills .btn").click(function() {
+      $(".category-pills .btn").removeClass("active");
+      $(this).addClass("active");
+      
+      const category = $(this).data("category");
+      if (category === "all") {
+        $(".menu-item").show();
+      } else {
+        $(".menu-item").hide();
+        $(`.menu-item[data-category="${category}"]`).show();
+      }
+    });
+    
+    // Quantity input
+    $(document).on("input", ".quantity-input", function () {
+      const menuId = $(this).data("menu-id");
+      const quantity = parseInt($(this).val()) || 0;
+      
+      updateItemQuantity(menuId, quantity);
+    });
+    
+    // Quick add button
+    $(document).on("click", ".quick-add", function(e) {
+      e.stopPropagation();
+      const menuId = $(this).closest(".menu-item").find(".quantity-input").data("menu-id");
+      const currentQuantity = parseInt(selectedItems[menuId]?.quantity || 0);
+      updateItemQuantity(menuId, currentQuantity + 1);
+    });
+    
+    // Increase quantity button
+    $(document).on("click", ".increase-item", function() {
+      const menuId = $(this).data("menu-id");
+      const currentQuantity = parseInt(selectedItems[menuId]?.quantity || 0);
+      updateItemQuantity(menuId, currentQuantity + 1);
+    });
+    
+    // Decrease quantity button
+    $(document).on("click", ".decrease-item", function() {
+      const menuId = $(this).data("menu-id");
+      const currentQuantity = parseInt(selectedItems[menuId]?.quantity || 0);
+      if (currentQuantity > 0) {
+        updateItemQuantity(menuId, currentQuantity - 1);
+      }
+    });
+    
+    // Remove item button
+    $(document).on("click", ".remove-item", function() {
+      const menuId = $(this).data("menu-id");
+      updateItemQuantity(menuId, 0);
+    });
+    
+    // Row click to select
+    $(document).on("click", ".menu-item", function(e) {
+      if (!$(e.target).is("input, button, .bi")) {
+        const menuId = $(this).find(".quantity-input").data("menu-id");
+        const currentQuantity = parseInt(selectedItems[menuId]?.quantity || 0);
+        updateItemQuantity(menuId, currentQuantity + 1);
+      }
+    });
+
+    // Submit order
+    $("#submit-orders").click(function () {
+      const orders = [];
+
+      for (const [id, data] of Object.entries(selectedItems)) {
+        orders.push({
+          menu_item_id: id,
+          quantity: data.quantity,
+        });
+      }
+
+      if (!orders.length) {
+        alert("Please select at least one item.");
+        return;
+      }
+
+      const orderDetails = {
+        random_id: currentOrderId,
+        customer_name: "Fishpoint Customer",
+        order_type: $("#order-type").val(),
+        status: "Pending",
+        special_notes: $("#add-special-notes").is(":checked") ? $("#special-notes").val() : "nothing",
+        orders: orders,
+      };
+
+      fetch("{% url 'submit_orders' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify(orderDetails),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.redirect_url) {
+          window.location.href = data.redirect_url;
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    });
+  });
+</script>
+{% endblock %}
