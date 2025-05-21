@@ -51,8 +51,7 @@ INSTALLED_APPS = [
     'store',
     'finance',
     'otherPackages',
-    'pytz',
-
+    
     # 3rd apps
     'rest_framework',
     'rest_framework.authtoken',
