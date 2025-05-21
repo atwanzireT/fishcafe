@@ -23,31 +23,32 @@
   <!-- Period Selector -->
   <div class="card shadow-sm mb-5">
     <div class="card-body">
-      <form method="get" class="row g-3 align-items-center justify-content-center">
-        <div class="col-auto">
-          <label for="month" class="col-form-label">Month:</label>
+      <form method="get" class="row g-3 align-items-end mb-4">
+        <div class="col-md-4">
+          <label for="start_date" class="form-label">Start Date</label>
+          <input
+            type="date"
+            id="start_date"
+            name="start_date"
+            class="form-control"
+            value="{{ start_date|date:'Y-m-d' }}"
+          />
         </div>
-        <div class="col-auto">
-          <select name="month" id="month" class="form-select">
-            {% for m in 1|to:12 %}
-              <option value="{{ m }}" {% if m == selected_month %}selected{% endif %}>{{ m|month_name }}</option>
-            {% endfor %}
-          </select>
+        <div class="col-md-4">
+          <label for="end_date" class="form-label">End Date</label>
+          <input
+            type="date"
+            id="end_date"
+            name="end_date"
+            class="form-control"
+            value="{{ end_date|date:'Y-m-d' }}"
+          />
         </div>
-        <div class="col-auto">
-          <label for="year" class="col-form-label">Year:</label>
-        </div>
-        <div class="col-auto">
-          <select name="year" id="year" class="form-select">
-            {% for y in 2020|to:2030 %}
-              <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-primary">Generate Report</button>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Generate</button>
         </div>
       </form>
+ 
     </div>
   </div>
 

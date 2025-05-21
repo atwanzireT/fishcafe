@@ -68,6 +68,8 @@ class OrderTransaction(models.Model):
     )
     random_id = models.CharField(max_length=6, unique=True, editable=False, default=generate_random_id)
     customer_name = models.CharField(max_length=255, blank=True, null=True, default="FishPoint Customer")
+    served_by = models.CharField(
+        max_length=255, blank=True, null=True, default="Waitress")
     dining_area = models.ForeignKey(DiningArea, on_delete=models.SET_NULL, null=True, blank=True)
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True )
     special_notes = models.TextField(default="Null")
@@ -110,6 +112,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(OrderTransaction, on_delete=models.CASCADE, related_name='order_items')
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, null=True, blank=True)
     order_date = models.DateTimeField(auto_now_add=True)
+
     customer_name = models.CharField(max_length=255, blank=True, null=True, default="FishPoint Customer")
     dining_area = models.ForeignKey(DiningArea, on_delete=models.SET_NULL, null=True, blank=True)
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True)

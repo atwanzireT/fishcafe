@@ -64,12 +64,13 @@ class OrderTransactionForm(forms.ModelForm):
 
     class Meta:
         model = OrderTransaction
-        fields = ['customer_name', 'table']
+        fields = ['customer_name', 'served_by','table']
         widgets = {
 
             
             'table': forms.Select(attrs={'class': 'form-control'}),
             'customer_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'served_by':forms.TextInput(attrs={'class':'form-control'})
         }
 
 

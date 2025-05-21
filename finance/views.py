@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RevenueForm, ExpenseForm, AssetForm, LiabilityForm
 from django.contrib.auth.decorators import login_required
-from datetime import date
+from datetime import date, datetime
 from calendar import monthrange
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -113,102 +113,70 @@ def get_balance_sheet(as_of_date=None):
 @login_required(login_url='/user/login/')
 def financial_report(request):
     """
-    Render a comprehensive financial report with income statement, balance sheet,
-    and key performance indicators for a selected month and year.
+    Render a financial report for a custom date range or default to the current month.
     """
-    today = date.today()
-    year = int(request.GET.get('year', today.year))
-    month = int(request.GET.get('month', today.month))
+    # Get date inputs from query params
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
 
-    # Set the date range for the report
-    start_date = date(year, month, 1)
-    last_day = monthrange(year, month)[1]
-    end_date = date(year, month, last_day)
+    today = date.today()
+
+    try:
+        start_date = datetime.strptime(
+            start_date_str, "%Y-%m-%d").date() if start_date_str else date(today.year, today.month, 1)
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else date(
+            today.year, today.month, monthrange(today.year, today.month)[1])
+    except ValueError:
+        messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+        start_date = date(today.year, today.month, 1)
+        end_date = date(today.year, today.month,
+                        monthrange(today.year, today.month)[1])
 
     # Get financial data
     income = get_income_statement(start_date, end_date)
-    balance = get_balance_sheet(end_date)  # Use end of period for balance sheet
+    balance = get_balance_sheet(end_date)
 
-    # Calculate key performance indicators
     total_revenue = income.get('total_revenue', Decimal('0.00'))
     total_expenses = income.get('total_expenses', Decimal('0.00'))
     net_profit = income.get('net_profit', Decimal('0.00'))
-    
-    # Calculate profit margin
-    profit_margin = Decimal('0.00')
-    if total_revenue > 0:
-        profit_margin = (net_profit / total_revenue) * 100
-    
-    # Calculate debt ratio (liabilities / assets)
+
+    profit_margin = (net_profit / total_revenue) * \
+        100 if total_revenue > 0 else Decimal('0.00')
     assets = balance.get('assets', Decimal('0.00'))
     liabilities = balance.get('liabilities', Decimal('0.00'))
-    debt_ratio = Decimal('0.00')
-    if assets > 0:
-        debt_ratio = liabilities / assets
+    debt_ratio = (liabilities / assets) if assets > 0 else Decimal('0.00')
 
-    # Check if there's meaningful data to display
-    has_data = (
-        total_revenue > 0 or 
-        total_expenses > 0 or 
-        assets > 0 or 
-        liabilities > 0
-    )
-
+    has_data = total_revenue > 0 or total_expenses > 0 or assets > 0 or liabilities > 0
     if not has_data:
         messages.warning(
-            request, 
-            f"No financial data found for {start_date.strftime('%B %Y')}."
-        )
+            request, f"No financial data found for the selected period ({start_date} to {end_date}).")
 
-    # Generate context-aware recommendations
+    # Recommendations
     recommendations = []
-    
-    # Financial health recommendations
+
     if net_profit < 0:
-        recommendations.append(
-            "Your business is operating at a loss. Consider reviewing expenses "
-            "and identifying cost-cutting opportunities."
-        )
-        recommendations.append(
-            "Explore new revenue streams or marketing strategies to increase sales."
-        )
+        recommendations += [
+            "Your business is operating at a loss. Consider reviewing expenses.",
+            "Explore new revenue streams to increase income."
+        ]
     elif total_expenses > (total_revenue * Decimal('0.7')):
         recommendations.append(
-            "Your expenses are high relative to revenue (over 70%). "
-            "Analyze your biggest expense categories for potential savings."
-        )
-    
-    # Debt-related recommendations
+            "Expenses exceed 70% of revenue. Review your major cost centers.")
+
     if debt_ratio > Decimal('0.6'):
         recommendations.append(
-            "Your debt ratio is high. Consider strategies to reduce liabilities "
-            "or increase assets to improve financial stability."
-        )
+            "High debt ratio. Consider reducing liabilities.")
     elif debt_ratio < Decimal('0.2') and net_profit > 0:
         recommendations.append(
-            "Your debt ratio is low. Consider if strategic investments or financing "
-            "could help accelerate business growth."
-        )
-    
-    # General positive recommendation if doing well
+            "Low debt ratio. You may explore growth through strategic investments.")
+
     if net_profit > 0 and debt_ratio < Decimal('0.5'):
         recommendations.append(
-            "Your business is in good financial health. Consider allocating profits "
-            "to emergency reserves or reinvesting in growth opportunities."
-        )
-    
-    # Ensure we have at least one recommendation
+            "Strong financial health. Consider reinvesting profits.")
+
     if not recommendations:
         recommendations.append(
-            "Continue monitoring your financial metrics and adjust your "
-            "business strategy as needed."
-        )
-
-    # Prepare RevPAR and ADR if you have the data
-    # These are hotel-specific metrics
-    revpar = None 
-    adr = None  
-    
+            "Continue monitoring and adjusting your strategy.")
 
     context = {
         'income': income,
@@ -218,14 +186,14 @@ def financial_report(request):
         'start_date': start_date,
         'end_date': end_date,
         'recommendations': recommendations,
-        'selected_year': year,
-        'selected_month': month,
-        'revpar': revpar,
-        'adr': adr,
+        'revpar': None,
+        'adr': None,
         'has_data': has_data
     }
 
     return render(request, 'financial_summary.html', context)
+
+
 
 @login_required(login_url='/user/login/')
 def add_revenue(request):
@@ -291,30 +259,24 @@ def liabities(request):
     page_obj = paginator.get_page(page_number)
     return render(request, "liability.html", {"all_liability": page_obj})
 
-# @login_required(login_url='/user/login/')
-# def revenue(request):
-#     revenue_list = Revenue.objects.filter(is_active=True).order_by('-date')
-#     paginator = Paginator(revenue_list, 10)
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-#     return render(request, "revenue.html", {"revenue_list": page_obj})
-
-
 
 
 @login_required(login_url='/user/login/')
 def revenue(request):
-    # Get selected month and year from query parameters
-    selected_month = request.GET.get('month')
-    selected_year = request.GET.get('year')
+    # Get date range from query params
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
-    # Filter by selected month and year if provided
     revenue_list = Revenue.objects.filter(is_active=True).order_by('-date')
-    if selected_month and selected_year:
-        revenue_list = revenue_list.filter(
-            date__year=selected_year,
-            date__month=selected_month
-        )
+
+    # Filter by date range if provided
+    if start_date and end_date:
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end = datetime.strptime(end_date, "%Y-%m-%d").date()
+            revenue_list = revenue_list.filter(date__range=(start, end))
+        except ValueError:
+            pass  # Handle invalid date input silently
 
     # Calculate total amount
     total_revenue = revenue_list.aggregate(total=Sum('amount'))['total'] or 0
@@ -324,46 +286,40 @@ def revenue(request):
     page_number = request.GET.get('page')
     revenue_page = paginator.get_page(page_number)
 
-    # Pass selected filters and total to the template
     context = {
         "revenue_list": revenue_page,
         "total_revenue": total_revenue,
-        "selected_month": selected_month,
-        "selected_year": selected_year,
+        "start_date": start_date,
+        "end_date": end_date,
     }
     return render(request, "revenue.html", context)
 
 
-
-
-
 @login_required(login_url='/user/login/')
 def expense(request):
-    # Get selected month and year from query parameters
-    selected_month = request.GET.get('month')
-    selected_year = request.GET.get('year')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
-    # Filter by selected month and year if provided
     expense_list = Expense.objects.filter(is_active=True).order_by('-date')
-    if selected_month and selected_year:
-        expense_list = expense_list.filter(
-            date__year=selected_year,
-            date__month=selected_month
-        )
 
-    # Calculate total amount
+    if start_date and end_date:
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end = datetime.strptime(end_date, "%Y-%m-%d").date()
+            expense_list = expense_list.filter(date__range=(start, end))
+        except ValueError:
+            pass  # Invalid dates will be ignored
+
     total_expense = expense_list.aggregate(total=Sum('amount'))['total'] or 0
 
-    # Pagination
     paginator = Paginator(expense_list, 10)
     page_number = request.GET.get('page')
     expense_page = paginator.get_page(page_number)
 
-    # Pass selected filters and total to the template
     context = {
         "expense_list": expense_page,
         "total_expense": total_expense,
-        "selected_month": selected_month,
-        "selected_year": selected_year,
+        "start_date": start_date,
+        "end_date": end_date,
     }
     return render(request, "expense.html", context)
