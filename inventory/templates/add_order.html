@@ -89,7 +89,7 @@
             {{ form.table }}
           </div>
           <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-success w-100">Start</button>
+            <button type="submit" class="btn btn-success w-100">Submit</button>
           </div>
         </form>
         <!-- Existing Transactions -->
@@ -101,8 +101,7 @@
             <option value="">Select Transaction</option>
             {% for transaction in unpaid_orders %}
             <option value="{{ transaction.random_id }}">
-              {{ transaction.customer_name }} - {{ transaction.table }} - {{
-              transaction.random_id }}
+              {{ transaction.customer_name }} - {{ transaction.table }} - {{ transaction.random_id }}
             </option>
             {% endfor %}
           </select>
