@@ -51,9 +51,7 @@ def export_orders_to_csv(request, time_period='daily'):
     # Create a visual header with decorative borders
 
     writer.writerow([f' {heading} '])
-    writer.writerow(
-        [f'Generated on: {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}'])
-    writer.writerow([f'Period: {start_date} to {today}'])
+
 
     writer.writerow([])  # blank line
 
@@ -89,8 +87,8 @@ def export_orders_to_csv(request, time_period='daily'):
         for item in order_items:
             category_name = item.menu_item.category.name if item.menu_item and item.menu_item.category else 'N/A'
             writer.writerow([
-                item.order_date.strftime('%Y-%m-%d'),
-                item.order_date.strftime('%H:%M:%S'),
+                timezone.localtime(item.order_date).strftime('%Y-%m-%d'),
+                timezone.localtime(item.order_date).strftime('%H:%M:%S'),
                 order.random_id,
                 category_name,
                 item.menu_item.name if item.menu_item else 'N/A',
