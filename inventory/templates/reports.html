@@ -32,6 +32,19 @@
 
                     </div>
                 </div>
+                <div class="row mt-3">
+                    <div class="col-auto">
+                        <h6>Export Expenses Report</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><a href="{% url 'export_expenses' 'daily' %}">Export Today's Expenses</a></li>
+                            <li class="list-group-item"><a href="{% url 'export_expenses' 'weekly' %}">Export This Week's Expenses</a></li>
+                            <li class="list-group-item"><a href="{% url 'export_expenses' 'monthly' %}">Export This Month's Expenses</a></li>
+                            <li class="list-group-item"><a href="{% url 'export_expenses' 'biannual' %}">Export This 6-Month Period's Expenses</a></li>
+                            <li class="list-group-item"><a href="{% url 'export_expenses' 'annual' %}">Export This Year's Expenses</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
 
                 <div class="row mt-3">
                     <div class="col-auto">

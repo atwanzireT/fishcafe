@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 from datetime import date
 
@@ -23,32 +24,35 @@ class Revenue(models.Model):
     def __str__(self):
         return f"Revenue: {self.description} - {self.amount}"
 
-class Expense(models.Model):
-    EXPENCE_CHOICES = [
-        ('staff', 'Salaries and Wages'),
-        ('utilities', 'Utilities'),
-        ('repairs', 'Repairs and Maintenance'),
-        ('supplies', 'Cleaning & Room Supplies'),
-        ('fnb', 'Food and Beverage'),
-        ('admin', 'Administrative'),
-        ('marketing', 'Sales and Marketing'),
-        ('finance', 'Finance Costs'),
-        ('depreciation', 'Depreciation'),
-        ('other', 'Other'),
 
+class Expenses(models.Model):
+    EXPENSE_CHOICES = [
+        ('allowances', 'Allowances'),
+        ('purchases', 'Purchases'),
+        ('other', 'Other'),
     ]
-    description = models.CharField(max_length=255)
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
-    date = models.DateField()
-    category = models.CharField(max_length=100, blank=True, null=True,  choices=EXPENCE_CHOICES)
-    attachment = models.FileField(upload_to='attachments/%Y/%m/%d/', blank=True, null=True)
+
+    category = models.CharField(
+        max_length=100, blank=True, null=True, choices=EXPENSE_CHOICES)
+    name_of_supplier = models.CharField(max_length=255)
+    quantity = models.DecimalField(max_digits=12, decimal_places=2)
+    unit_cost = models.DecimalField(max_digits=12, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    amount_paid = models.DecimalField(max_digits=12, decimal_places=2)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, blank=True)
     is_active = models.BooleanField(default=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
-                                   null=True, blank=True, related_name='+')
-    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
-                                   null=True, blank=True, related_name='+')
+    created_date = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        # Automatically calculate balance before saving
+        self.total_amount = self.quantity * self.unit_cost
+        self.balance = self.total_amount - self.amount_paid
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Expense: {self.description} - {self.amount}"
+        return f"Expenses: {self.category} - {self.amount_paid}"
 
 class Asset(models.Model):
     name = models.CharField(max_length=255)

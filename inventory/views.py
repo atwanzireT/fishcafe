@@ -42,7 +42,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 import pytz
 from datetime import datetime, time, timedelta
-
+from django.db.models.functions import Lower
 today = timezone.localdate()
 
 # === DASHBOARD ===
@@ -50,63 +50,84 @@ today = timezone.localdate()
 
 @login_required(login_url='/user/login/')
 def dashboard(request):
-    # Replace 'Africa/Kampala' with your actual local timezone if different
-    local_tz = pytz.timezone('Africa/Kampala')  # or any timezone you need
-
+    local_tz = pytz.timezone('Africa/Kampala')
     now_local = timezone.now().astimezone(local_tz)
     today_local = now_local.date()
 
-    # Set start time to 6:00 AM local time
+    # Define business day: 10 AM today to 9 AM tomorrow
     start_local = local_tz.localize(
-        datetime.combine(today_local, time(6, 0, 0)))
-    # Set end time to 11:59 PM local time
-    end_local = local_tz.localize(
-        datetime.combine(today_local, time(23, 59, 59)))
+        datetime.combine(today_local, time(10, 0, 0)))
+    end_local = local_tz.localize(datetime.combine(
+        today_local, time(9, 0, 0))) + timezone.timedelta(days=1)
 
-    # Convert to UTC (server timezone for consistency in DB queries)
     start_utc = start_local.astimezone(pytz.UTC)
     end_utc = end_local.astimezone(pytz.UTC)
 
-    # Get order counts and total sales between 6:00 AM and 11:59 PM
+    # Metrics
     orderTodayCount = OrderItem.objects.filter(
         order_date__range=(start_utc, end_utc)).count()
     orderCount = OrderItem.objects.count()
-    today_total_amount = OrderItem.objects.filter(order_date__range=(start_utc, end_utc))\
-        .aggregate(total=Sum('total_price'))['total'] or 0
+    today_total_amount = OrderItem.objects.filter(order_date__range=(start_utc, end_utc)) \
+                                          .aggregate(total=Sum('total_price'))['total'] or 0
 
-    orders = OrderItem.objects.select_related(
+    recent_orders = OrderItem.objects.select_related(
         'menu_item').order_by('-order_date')[:5]
 
+    # Most Ordered Menu Items
+    most_ordered_items = (
+        OrderItem.objects.values('menu_item__name')
+        .annotate(total_quantity=Sum('quantity'))
+        .order_by('-total_quantity')[:10]
+    )
+
+    # Waiter Transaction Summary for Today (filtered by transaction time)
+    waiter_summary = (
+        OrderTransaction.objects
+        # Requires 'created_at' field in model
+        .filter(created__range=(start_utc, end_utc))
+        .filter(served_by__isnull=False)
+        .exclude(served_by__exact='')
+        .annotate(waiter_name=Lower('served_by'))
+        .values('waiter_name')
+        .annotate(transaction_count=Count('id'))
+        .order_by('-transaction_count')
+    )
+
+    waiter_labels = [w['waiter_name'] for w in waiter_summary]
+    waiter_counts = [w['transaction_count'] for w in waiter_summary]
+
+# Top Customer (Single Order)
+    top_customer_order = (
+        OrderItem.objects.values('order__customer_name', 'order__random_id')
+        .annotate(total_order_value=Sum('total_price'))
+        .order_by('-total_order_value')
+        .first()
+    )
+
+
+    # Top Customer Overall
+    top_customer_overall = (
+        OrderItem.objects
+        .values('order__customer_name')
+        .annotate(
+            total_spent=Sum('total_price'),
+            order_count=Count('order', distinct=True)
+        )
+        .order_by('-total_spent')
+        .first()
+    )
     return render(request, "dashboard.html", {
         "orderTodayCount": orderTodayCount,
         "orderCount": orderCount,
-        "orders": orders,
+        "orders": recent_orders,
         "today_total_amount": today_total_amount,
+        "most_ordered_items": most_ordered_items,
+        "waiter_summary": waiter_summary,
+        "top_customer_order": top_customer_order,
+        "top_customer_overall": top_customer_overall,
+        'waiter_labels': waiter_labels,
+        'waiter_counts': waiter_counts,
     })
-
-
-# @login_required(login_url='/user/login/')
-# def dashboard(request):
-#     start_of_today = timezone.make_aware(
-#         datetime.combine(today, datetime.min.time()))
-#     end_of_today = timezone.make_aware(datetime.combine(
-#         today + timedelta(days=1), datetime.min.time()))
-
-#     orderTodayCount = OrderItem.objects.filter(
-#         order_date__range=(start_of_today, end_of_today)).count()
-#     orderCount = OrderItem.objects.count()
-#     today_total_amount = OrderItem.objects.filter(order_date__range=(
-#         start_of_today, end_of_today)).aggregate(total=Sum('total_price'))['total'] or 0
-#     orders = OrderItem.objects.select_related(
-#         'menu_item').order_by('-order_date')[:5]
-
-#     return render(request, "dashboard.html", {
-#         "orderTodayCount": orderTodayCount,
-#         "orderCount": orderCount,
-#         "orders": orders,
-#         "today_total_amount": today_total_amount,
-#     })
-
 
 
 
