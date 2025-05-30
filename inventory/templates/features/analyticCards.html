@@ -1,124 +1,378 @@
 {% load humanize %}
-<!-- Analytics Dashboard Cards -->
+
+<!-- Dashboard Analytics -->
 <div class="analytics-container mb-4">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h4 class="fw-bold m-0">Today's Analytics</h4>
+        <div>
+            <h4 class="fw-bold m-0 text-dark">Today's Analytics</h4>
+            <p class="text-muted mb-0 small">Real-time business insights</p>
+        </div>
         <div class="dropdown">
-            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="timeRangeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <iconify-icon icon="lucide:calendar" class="me-1" style="font-size: 16px;"></iconify-icon>
+            <button class="btn btn-outline-primary dropdown-toggle shadow-sm" type="button" id="timeRangeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <iconify-icon icon="lucide:calendar" class="me-2" style="font-size: 16px;"></iconify-icon>
                 Today
             </button>
-            <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="timeRangeDropdown">
-                <li><a class="dropdown-item active" href="#">Today</a></li>
-                <li><a class="dropdown-item" href="#">Yesterday</a></li>
-                <li><a class="dropdown-item" href="#">This Week</a></li>
-                <li><a class="dropdown-item" href="#">This Month</a></li>
+            <ul class="dropdown-menu shadow border-0 rounded-3" aria-labelledby="timeRangeDropdown">
+                <li><a class="dropdown-item active rounded-2" href="#">Today</a></li>
+                <li><a class="dropdown-item rounded-2" href="#">Yesterday</a></li>
+                <li><a class="dropdown-item rounded-2" href="#">This Week</a></li>
+                <li><a class="dropdown-item rounded-2" href="#">This Month</a></li>
             </ul>
         </div>
     </div>
-    
+
+    <!-- Key Metrics Row -->
+    <div class="row g-4 mb-5">
+        <!-- Total Orders -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                <div class="card-body p-0">
+                    <div class="d-flex h-100">
+                        <div class="bg-primary bg-opacity-10 d-flex align-items-center justify-content-center px-4 position-relative">
+                            <iconify-icon icon="lucide:shopping-cart" style="color: #4361ee; font-size: 2.8rem;"></iconify-icon>
+                            <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient opacity-25" style="background: linear-gradient(135deg, #4361ee, #3a86ff);"></div>
+                        </div>
+                        <div class="p-4 w-100 d-flex flex-column justify-content-center">
+                            <p class="text-muted mb-1 fw-medium small text-uppercase tracking-wide">Total Orders</p>
+                            <h2 class="fw-bold mb-1 text-primary">{{ orderCount }}</h2>
+                            <div class="d-flex align-items-center">
+                                <iconify-icon icon="lucide:trending-up" class="text-success me-1" style="font-size: 14px;"></iconify-icon>
+                                <small class="text-success fw-medium">All time</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Orders -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                <div class="card-body p-0">
+                    <div class="d-flex h-100">
+                        <div class="bg-success bg-opacity-10 d-flex align-items-center justify-content-center px-4 position-relative">
+                            <iconify-icon icon="lucide:clipboard-list" style="color: #2ea44f; font-size: 2.8rem;"></iconify-icon>
+                            <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient opacity-25" style="background: linear-gradient(135deg, #2ea44f, #28a745);"></div>
+                        </div>
+                        <div class="p-4 w-100 d-flex flex-column justify-content-center">
+                            <p class="text-muted mb-1 fw-medium small text-uppercase tracking-wide">Today's Orders</p>
+                            <h2 class="fw-bold mb-1 text-success">{{ orderTodayCount }}</h2>
+                            <div class="d-flex align-items-center">
+                                <iconify-icon icon="lucide:clock" class="text-info me-1" style="font-size: 14px;"></iconify-icon>
+                                <small class="text-info fw-medium">Last 24 hours</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Revenue -->
+        <div class="col-xl-4 col-md-12">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                <div class="card-body p-0">
+                    <div class="d-flex h-100">
+                        <div class="bg-warning bg-opacity-10 d-flex align-items-center justify-content-center px-4 position-relative">
+                            <iconify-icon icon="lucide:wallet" style="color: #f59e0b; font-size: 2.8rem;"></iconify-icon>
+                            <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient opacity-25" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);"></div>
+                        </div>
+                        <div class="p-4 w-100 d-flex flex-column justify-content-center">
+                            <p class="text-muted mb-1 fw-medium small text-uppercase tracking-wide">Revenue Today</p>
+                            <h2 class="fw-bold mb-1 text-warning">UGX {{ today_total_amount|intcomma }}</h2>
+                            <div class="d-flex align-items-center">
+                                <iconify-icon icon="lucide:dollar-sign" class="text-warning me-1" style="font-size: 14px;"></iconify-icon>
+                                <small class="text-warning fw-medium">Daily earnings</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Metrics Row -->
+    <div class="row g-4 mb-5">
+        <!-- Most Ordered Items -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="fw-bold mb-1">Most Ordered Items Today</h5>
+                            <p class="text-muted small mb-0">Popular menu items</p>
+                        </div>
+                        <iconify-icon icon="lucide:bar-chart-3" class="text-primary" style="font-size: 1.5rem;"></iconify-icon>
+                    </div>
+                </div>
+                <div class="card-body pt-2">
+                    <div class="list-group list-group-flush">
+                        {% for item in most_ordered_items %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                        <iconify-icon icon="lucide:utensils" class="text-primary" style="font-size: 16px;"></iconify-icon>
+                                    </div>
+                                    <span class="fw-medium">{{ item.menu_item__name }}</span>
+                                </div>
+                                <span class="badge bg-primary rounded-pill px-3 py-2">{{ item.total_quantity }}</span>
+                            </div>
+                        {% empty %}
+                            <div class="text-center py-5">
+                                <iconify-icon icon="lucide:shopping-bag" class="text-muted mb-3" style="font-size: 3rem;"></iconify-icon>
+                                <p class="text-muted mb-0">No orders yet today</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Waiter Summary -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="fw-bold mb-1">Waiter Performance</h5>
+                            <p class="text-muted small mb-0">Transaction summary</p>
+                        </div>
+                        <iconify-icon icon="lucide:users" class="text-success" style="font-size: 1.5rem;"></iconify-icon>
+                    </div>
+                </div>
+                <div class="card-body pt-2">
+                    <div class="d-flex justify-content-between text-muted fw-medium px-0 mb-3 small text-uppercase">
+                        <span>Waiter Name</span>
+                        <span>Transactions</span>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for waiter in waiter_summary %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                        <iconify-icon icon="lucide:user" class="text-success" style="font-size: 16px;"></iconify-icon>
+                                    </div>
+                                    <span class="fw-medium">{{ waiter.waiter_name }}</span>
+                                </div>
+                                <span class="badge bg-success rounded-pill px-3 py-2">{{ waiter.transaction_count }}</span>
+                            </div>
+                        {% empty %}
+                            <div class="text-center py-5">
+                                <iconify-icon icon="lucide:user-x" class="text-muted mb-3" style="font-size: 3rem;"></iconify-icon>
+                                <p class="text-muted mb-0">No waiter data available</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Analytics Row -->
     <div class="row g-4">
-        <!-- Orders Card -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="card-body p-0">
-                    <div class="d-flex h-100">
-                        <div class="bg-primary bg-opacity-10 d-flex align-items-center justify-content-center px-4">
-                            <iconify-icon icon="lucide:shopping-cart" style="color: #4361ee; font-size: 2.5rem;"></iconify-icon>
+        <!-- Top Customer Today -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="fw-bold mb-1">Top Customer Today</h5>
+                            <p class="text-muted small mb-0">Highest spender today</p>
                         </div>
-                        <div class="p-4 w-100">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <p class="text-muted mb-0 fw-medium">Total Orders</p>
-                                <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill">
-                                    <iconify-icon icon="lucide:trending-up" class="me-1" style="font-size: 14px;"></iconify-icon>
-                                    12%
-                                </span>
-                            </div>
-                            <h3 class="fw-bold mb-0">{{orderCount}}</h3>
-                            <div class="progress mt-3" style="height: 5px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
+                        <iconify-icon icon="lucide:crown" class="text-warning" style="font-size: 1.5rem;"></iconify-icon>
                     </div>
+                </div>
+                <div class="card-body pt-0">
+                    {% if top_customer_order %}
+                        <div class="bg-light rounded-3 p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                                    <iconify-icon icon="lucide:user-check" class="text-warning" style="font-size: 24px;"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ top_customer_order.order__customer_name }}</h6>
+                                    <small class="text-muted">Order #{{ top_customer_order.order__random_id }}</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted">Total Spent:</span>
+                                        <span class="fw-bold text-warning h5 mb-0">UGX {{ top_customer_order.total_order_value|intcomma }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <iconify-icon icon="lucide:user-minus" class="text-muted mb-3" style="font-size: 3rem;"></iconify-icon>
+                            <p class="text-muted mb-0">No customer data for today</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        
-        <!-- Today's Orders Card -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="card-body p-0">
-                    <div class="d-flex h-100">
-                        <div class="bg-success bg-opacity-10 d-flex align-items-center justify-content-center px-4">
-                            <iconify-icon icon="lucide:clipboard-list" style="color: #2ea44f; font-size: 2.5rem;"></iconify-icon>
+
+        <!-- Top Customer Overall -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="fw-bold mb-1">Top Customer Overall</h5>
+                            <p class="text-muted small mb-0">Most loyal customer</p>
                         </div>
-                        <div class="p-4 w-100">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <p class="text-muted mb-0 fw-medium">Today's Orders</p>
-                                <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
-                                    <iconify-icon icon="lucide:trending-up" class="me-1" style="font-size: 14px;"></iconify-icon>
-                                    8%
-                                </span>
-                            </div>
-                            <h3 class="fw-bold mb-0">{{orderTodayCount}}</h3>
-                            <div class="progress mt-3" style="height: 5px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
+                        <iconify-icon icon="lucide:trophy" class="text-danger" style="font-size: 1.5rem;"></iconify-icon>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Today's Collections Card -->
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="card-body p-0">
-                    <div class="d-flex h-100">
-                        <div class="bg-warning bg-opacity-10 d-flex align-items-center justify-content-center px-4">
-                           <span style="color: #f59e0b; font-size: 2rem; font-weight: bold;">Ugx</span>
-                        </div>
-                        <div class="p-4 w-100">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <p class="text-muted mb-0 fw-medium">Today's Collections</p>
-                                <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1 rounded-pill">
-                                    <iconify-icon icon="lucide:trending-up" class="me-1" style="font-size: 14px;"></iconify-icon>
-                                    15%
-                                </span>
+                <div class="card-body pt-0">
+                    {% if top_customer_overall %}
+                        <div class="bg-light rounded-3 p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-danger bg-opacity-10 rounded-circle p-3 me-3">
+                                    <iconify-icon icon="lucide:star" class="text-danger" style="font-size: 24px;"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ top_customer_overall.order__customer_name }}</h6>
+                                    <small class="text-muted">{{ top_customer_overall.order_count }} total orders</small>
+                                </div>
                             </div>
-                            <h3 class="fw-bold mb-0">{{today_total_amount|intcomma}}</h3>
-                            <div class="progress mt-3" style="height: 5px;">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted">Total Spent:</span>
+                                        <span class="fw-bold text-danger h5 mb-0">UGX {{ top_customer_overall.total_spent|intcomma }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <iconify-icon icon="lucide:users-x" class="text-muted mb-3" style="font-size: 3rem;"></iconify-icon>
+                            <p class="text-muted mb-0">No customer data available</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Optional: Add this CSS to your stylesheet for additional styling -->
 <style>
     .analytics-container .card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
     }
-    
+
     .analytics-container .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+        border-color: rgba(0, 0, 0, 0.1);
     }
-    
+
     .rounded-4 {
+        border-radius: 16px !important;
+    }
+
+    .rounded-3 {
         border-radius: 12px !important;
     }
-    
-    .progress {
-        background-color: rgba(0, 0, 0, 0.05);
-        border-radius: 10px;
+
+    .rounded-2 {
+        border-radius: 8px !important;
     }
-    
+
+    .tracking-wide {
+        letter-spacing: 0.05em;
+    }
+
+    .bg-gradient {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    }
+
+    .dropdown-menu {
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    .dropdown-item:hover {
+        background-color: rgba(67, 97, 238, 0.1);
+        transform: translateX(4px);
+        transition: all 0.2s ease;
+    }
+
+    .dropdown-item.active {
+        background-color: rgba(67, 97, 238, 0.15);
+        color: #4361ee;
+        font-weight: 600;
+    }
+
+    .list-group-item {
+        transition: all 0.2s ease;
+    }
+
+    .list-group-item:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        transform: translateX(4px);
+    }
+
     .badge {
-        font-weight: 500;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(248, 249, 250, 0.8));
+    }
+
+    @media (max-width: 768px) {
+        .analytics-container .card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .tracking-wide {
+            letter-spacing: 0.025em;
+        }
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .card-header {
+            background: linear-gradient(135deg, rgba(33, 37, 41, 0.8), rgba(52, 58, 64, 0.8));
+        }
+        
+        .dropdown-menu {
+            background-color: rgba(33, 37, 41, 0.95);
+        }
+    }
+
+    /* Smooth loading animation */
+    .analytics-container {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Pulse animation for metrics */
+    .analytics-container .card:nth-child(1) .fw-bold {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.8;
+        }
     }
 </style>

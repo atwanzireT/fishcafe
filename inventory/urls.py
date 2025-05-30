@@ -6,6 +6,7 @@ from inventory.generate_pdfs.create_order_transactions import print_order_receip
 from inventory.generate_csv_reports.order_csv_report import export_orders_to_csv
 from inventory.generate_csv_reports.paid_order_csv import export_paid_order_to_csv
 from inventory.generate_csv_reports.general_order_csv import export_general_order_to_csv
+from inventory.generate_csv_reports.expense_csv import export_expenses_to_csv
 
 urlpatterns = [
     # Dashboard
@@ -43,6 +44,9 @@ urlpatterns = [
     path('export-orders/<str:time_period>/', export_orders_to_csv, name='export_orders'),
     path('paid-orders/', export_paid_order_to_csv, name='paid-orders'),
     path('general-orders/', export_general_order_to_csv, name='general_orders'),
+    path('export/expenses/<str:time_period>/',
+         export_expenses_to_csv, name='export_expenses'),
+    
     
     
     #admin

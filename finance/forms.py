@@ -1,5 +1,5 @@
 from django import forms
-from .models import Revenue, Expense, Asset, Liability
+from .models import Revenue, Expenses, Asset, Liability
 
 class RevenueForm(forms.ModelForm):
     class Meta:
@@ -14,17 +14,19 @@ class RevenueForm(forms.ModelForm):
             'attachment': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
+
 class ExpenseForm(forms.ModelForm):
     class Meta:
-        model = Expense
-        fields = ['category', 'description', 'amount', 'date', 'attachment']
+        model = Expenses
+        fields = ['category', 'name_of_supplier', 'quantity',
+                  'unit_cost', 'total_amount', 'amount_paid']
         widgets = {
             'category': forms.Select(attrs={'class': 'form-select'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
-            'amount': forms.NumberInput(attrs={'class': 'form-control'}),
-            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'drawn_by': forms.TextInput(attrs={'class': 'form-control'}),
-            'attachment': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'name_of_supplier': forms.TextInput(attrs={'class': 'form-control'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'unit_cost': forms.NumberInput(attrs={'class': 'form-control'}),
+            'total_amount': forms.NumberInput(attrs={'class': 'form-control'}),
+            'amount_paid': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
 class AssetForm(forms.ModelForm):

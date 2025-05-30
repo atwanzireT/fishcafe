@@ -2,12 +2,12 @@ from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RevenueForm, ExpenseForm, AssetForm, LiabilityForm
 from django.contrib.auth.decorators import login_required
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from calendar import monthrange
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.utils import timezone
-from finance.models import Asset, Expense, Liability, Revenue
+from finance.models import Asset, Expenses, Liability, Revenue
 from django.db.models import Sum
 
 from inventory.models import *
@@ -34,15 +34,16 @@ def get_income_statement(start_date, end_date, user=None):
         is_active=True
     )
     
-    expense_query = Expense.objects.filter(
-        date__gte=start_date, 
-        date__lte=end_date,
+    expense_query = Expenses.objects.filter(
+        created_date__gte=start_date,
+        created_date__lte=end_date,
         is_active=True
     )
     
     # Calculate totals
     total_revenue = revenue_query.aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
-    total_expenses = expense_query.aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
+    total_expenses = expense_query.aggregate(Sum('amount_paid'))[
+        'amount_paid__sum'] or Decimal('0.00')
     net_profit = total_revenue - total_expenses
     
     # Get revenue breakdown by category
@@ -53,8 +54,8 @@ def get_income_statement(start_date, end_date, user=None):
     
     # Get expense breakdown by category
     expense_by_category = {}
-    for category_code, category_name in Expense.EXPENCE_CHOICES:
-        amount = expense_query.filter(category=category_code).aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
+    for category_code, category_name in Expenses. EXPENSE_CHOICES:
+        amount = expense_query.filter(category=category_code).aggregate(Sum('amount_paid'))['amount_paid__sum'] or Decimal('0.00')
         expense_by_category[category_name] = amount
     
     return {
@@ -300,17 +301,23 @@ def expense(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-    expense_list = Expense.objects.filter(is_active=True).order_by('-date')
+    expense_list = Expenses.objects.filter(
+        is_active=True).order_by('-created_date')
 
     if start_date and end_date:
         try:
-            start = datetime.strptime(start_date, "%Y-%m-%d").date()
-            end = datetime.strptime(end_date, "%Y-%m-%d").date()
-            expense_list = expense_list.filter(date__range=(start, end))
+            start = datetime.strptime(start_date, "%Y-%m-%d")
+            # include full end date
+            end = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
+            expense_list = expense_list.filter(
+                created_date__gte=start,
+                created_date__lt=end
+            )
         except ValueError:
             pass  # Invalid dates will be ignored
 
-    total_expense = expense_list.aggregate(total=Sum('amount'))['total'] or 0
+    total_expense = expense_list.aggregate(
+        total=Sum('amount_paid'))['total'] or 0
 
     paginator = Paginator(expense_list, 10)
     page_number = request.GET.get('page')

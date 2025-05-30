@@ -5,18 +5,14 @@
 <div class="">
     <div class="card-body">
         <div class="row">
-            <div  id="receipt" class="col-md-8 mx-auto">
+            <div id="receipt" class="col-md-8 mx-auto">
                 <div class="card">
                     <div class="card-body">
                         <div>
                             <h3 class="text-center mb-4">Fish Point Cafe</h3>
-                            <div class="row">
-                                <div class="col"></div>
-                                <div class="col"></div>
-                            </div>
                         </div>
                         <h5 class="text-center mb-4">Order Details</h5>
-                        <p><strong class="text-bold">Order Number: </strong> {{ order.random_id }} {{ order.table }}</p>
+                        <p><strong>Order Number:</strong> {{ order.random_id }} | {{ order.table }}</p>
 
                         <div class="row">
                             <div class="col-6">
@@ -34,9 +30,9 @@
                             <thead>
                                 <tr>
                                     <th>Item</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total Price</th>
+                                    <th>Qty</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -49,8 +45,8 @@
                                 </tr>
                                 {% endfor %}
                                 <tr>
-                                    <td colspan="3" class="text-right"><strong> Total = {{ total_price|intcomma }} </strong></td>
-                                    
+                                    <td colspan="3" class="text-right"><strong>Total</strong></td>
+                                    <td><strong>{{ total_price|intcomma }}</strong></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -61,7 +57,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-3">
                     <div class="col-auto">
                         <button onclick="printReceiptDiv()" class="btn btn-primary no-print">Print Receipt</button>
                     </div>
@@ -95,7 +91,6 @@
 </div>
 
 <script>
-    // Store total price as a JavaScript variable for calculation
     const totalPrice = parseFloat("{{ total_price|floatformat:2 }}") || 0;
 
     function calculateBalance() {
@@ -105,7 +100,6 @@
         document.getElementById('balance').value = balance >= 0 ? balance.toFixed(2) : 'Insufficient amount';
     }
 
-    // Enable button only when amount is entered
     document.getElementById('amountGiven').addEventListener('input', function () {
         document.querySelector('button[onclick="calculateBalance()"]').disabled = !this.value;
     });
@@ -115,7 +109,45 @@
         var printWindow = window.open("", "", "height=600,width=800");
         printWindow.document.write('<html><head><title>Print Receipt</title>');
         printWindow.document.write('<style>');
-        printWindow.document.write('@media print { body { font-family: Arial; } table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #000; padding: 5px; } .no-print { display: none; } }');
+        printWindow.document.write(`
+            @media print {
+                body {
+                    font-family: monospace;
+                    font-size: 10px;
+                    margin: 0;
+                    padding: 0;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                th, td {
+                    border: none;
+                    padding: 2px 4px;
+                    word-wrap: break-word;
+                }
+                th {
+                    text-align: left;
+                    font-weight: bold;
+                }
+                td {
+                    text-align: left;
+                }
+                .text-right {
+                    text-align: right;
+                }
+                .text-center {
+                    text-align: center;
+                }
+                .no-print {
+                    display: none;
+                }
+                @page {
+                    margin: 0;
+                    size: 48mm auto;
+                }
+            }
+        `);
         printWindow.document.write('</style>');
         printWindow.document.write('</head><body>');
         printWindow.document.write(receiptContent);
@@ -127,12 +159,10 @@
     }
 </script>
 
-
 {% endblock content %}
 
 {% block extra_css %}
 <style>
-    /* Hide unnecessary elements during print */
     @media print {
         body * {
             visibility: hidden;
