@@ -31,10 +31,11 @@ class Expenses(models.Model):
         ('purchases', 'Purchases'),
         ('other', 'Other'),
     ]
-
+    name = models.CharField(blank=True, null=True, max_length=200)
     category = models.CharField(
         max_length=100, blank=True, null=True, choices=EXPENSE_CHOICES)
     name_of_supplier = models.CharField(max_length=255)
+    
     quantity = models.DecimalField(max_digits=12, decimal_places=2)
     unit_cost = models.DecimalField(max_digits=12, decimal_places=2)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2)

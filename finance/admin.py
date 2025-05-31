@@ -15,7 +15,7 @@ class LiabilityAdmin(admin.ModelAdmin):
 
 @admin.register(Expenses)
 class ExpenseAdmin(admin.ModelAdmin):
-    list_display = ['category', 'name_of_supplier', 'quantity',
+    list_display = ['name','category', 'name_of_supplier', 'quantity',
                     'unit_cost', 'total_amount', 'amount_paid', 'balance', 'created_date']
     search_fields = ['category', 'name_of_supplier']
     list_filter = ['category', 'created_date']

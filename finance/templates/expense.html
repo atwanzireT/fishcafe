@@ -44,24 +44,33 @@
         <thead class="table-light">
           <tr>
             <th>Date</th>
+            <th>Expense Name</th>
             <th>Category</th>
             <th>Supplier</th>
             <th>Total Amount</th>
             <th>Amount Paid</th>
             <th>Balance</th>
             <th>Created By</th>
+            <th>Action</th>
+          
           </tr>
         </thead>
         <tbody>
           {% for expense in expense_list %}
           <tr>
             <td>{{ expense.created_date|date:"Y-m-d" }}</td>
+            <td>{{ expense.name }}</td>
             <td>{{ expense.get_category_display }}</td>
             <td>{{ expense.name_of_supplier }}</td>
             <td>{{ expense.total_amount|intcomma }}</td>
             <td>{{ expense.amount_paid|intcomma }}</td>
             <td>{{ expense.balance|intcomma }}</td>
             <td>{{ expense.created_by}}</td>
+            <td> 
+              <a href="/finance/expenses/edit/{{ expense.pk }}/" class="btn btn-sm btn-outline-warning">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+               </td>
           </tr>
           {% empty %}
           <tr>

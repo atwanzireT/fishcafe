@@ -28,13 +28,18 @@
             <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
                 <div class="card-body p-0">
                     <div class="d-flex h-100">
+                        <!-- Left icon section with background -->
                         <div class="bg-primary bg-opacity-10 d-flex align-items-center justify-content-center px-4 position-relative">
-                            <iconify-icon icon="lucide:shopping-cart" style="color: #4361ee; font-size: 2.8rem;"></iconify-icon>
-                            <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient opacity-25" style="background: linear-gradient(135deg, #4361ee, #3a86ff);"></div>
+                            <iconify-icon icon="mdi:account-group-outline" style="color: #4361ee; font-size: 2.8rem;"></iconify-icon>
+                            <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient opacity-25" 
+                                 style="background: linear-gradient(135deg, #4361ee, #3a86ff); z-index: 0;">
+                            </div>
                         </div>
+            
+                        <!-- Content section -->
                         <div class="p-4 w-100 d-flex flex-column justify-content-center">
-                            <p class="text-muted mb-1 fw-medium small text-uppercase tracking-wide">Total Orders</p>
-                            <h2 class="fw-bold mb-1 text-primary">{{ orderCount }}</h2>
+                            <p class="text-muted mb-1 fw-medium small text-uppercase tracking-wide">Total Customers</p>
+                            <h2 class="fw-bold mb-1 text-primary">{{ total_customers }}</h2>
                             <div class="d-flex align-items-center">
                                 <iconify-icon icon="lucide:trending-up" class="text-success me-1" style="font-size: 14px;"></iconify-icon>
                                 <small class="text-success fw-medium">All time</small>
@@ -43,6 +48,7 @@
                     </div>
                 </div>
             </div>
+            >
         </div>
 
         <!-- Today's Orders -->
@@ -76,14 +82,17 @@
                             <iconify-icon icon="lucide:wallet" style="color: #f59e0b; font-size: 2.8rem;"></iconify-icon>
                             <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient opacity-25" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);"></div>
                         </div>
-                        <div class="p-4 w-100 d-flex flex-column justify-content-center">
-                            <p class="text-muted mb-1 fw-medium small text-uppercase tracking-wide">Revenue Today</p>
-                            <h2 class="fw-bold mb-1 text-warning">UGX {{ today_total_amount|intcomma }}</h2>
-                            <div class="d-flex align-items-center">
-                                <iconify-icon icon="lucide:dollar-sign" class="text-warning me-1" style="font-size: 14px;"></iconify-icon>
-                                <small class="text-warning fw-medium">Daily earnings</small>
+                        <div class="p-4 w-100 d-flex flex-column justify-content-center bg-light rounded shadow-sm">
+                            <p class="text-muted mb-1 fw-semibold small text-uppercase">Daily Customers</p>
+                            
+                            <div class="d-flex align-items-center mb-2">
+                                <iconify-icon icon="mdi:account-group" class="text-warning me-2" style="font-size: 24px;"></iconify-icon>
+                                <h2 class="fw-bold mb-0 text-warning">{{ customers_today }}</h2>
                             </div>
+                        
+
                         </div>
+                        
                     </div>
                 </div>
             </div>

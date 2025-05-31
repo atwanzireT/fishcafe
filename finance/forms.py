@@ -18,9 +18,10 @@ class RevenueForm(forms.ModelForm):
 class ExpenseForm(forms.ModelForm):
     class Meta:
         model = Expenses
-        fields = ['category', 'name_of_supplier', 'quantity',
+        fields = ['name','category', 'name_of_supplier', 'quantity',
                   'unit_cost', 'total_amount', 'amount_paid']
         widgets = {
+            'name':forms.TextInput(attrs={'class':'form-select'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
             'name_of_supplier': forms.TextInput(attrs={'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control'}),

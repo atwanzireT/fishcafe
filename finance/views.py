@@ -330,3 +330,16 @@ def expense(request):
         "end_date": end_date,
     }
     return render(request, "expense.html", context)
+@login_required(login_url='/user/login/')
+def edit_expense(request, pk):
+    expense = get_object_or_404(Expenses, pk=pk)
+
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST, instance=expense)
+        if form.is_valid():
+            form.save()
+            return redirect('expense')  # Update with your actual redirect URL name
+    else:
+        form = ExpenseForm(instance=expense)
+
+    return render(request, 'expenses/edit_expense.html', {'form': form, 'expense': expense})

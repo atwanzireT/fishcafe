@@ -45,11 +45,9 @@ from datetime import datetime, time, timedelta
 from django.db.models.functions import Lower
 today = timezone.localdate()
 
-# === DASHBOARD ===
-
 
 @login_required(login_url='/user/login/')
-def dashboard(request):
+def  dashboard(request):
     local_tz = pytz.timezone('Africa/Kampala')
     now_local = timezone.now().astimezone(local_tz)
     today_local = now_local.date()
@@ -58,10 +56,11 @@ def dashboard(request):
     start_local = local_tz.localize(
         datetime.combine(today_local, time(10, 0, 0)))
     end_local = local_tz.localize(datetime.combine(
-        today_local, time(9, 0, 0))) + timezone.timedelta(days=1)
-
+        today_local, time(9, 59, 0))) + timezone.timedelta(days=1)
     start_utc = start_local.astimezone(pytz.UTC)
     end_utc = end_local.astimezone(pytz.UTC)
+    # Filter range
+    date_range = (start_utc, end_utc)
 
     # Metrics
     orderTodayCount = OrderItem.objects.filter(
@@ -70,21 +69,37 @@ def dashboard(request):
     today_total_amount = OrderItem.objects.filter(order_date__range=(start_utc, end_utc)) \
                                           .aggregate(total=Sum('total_price'))['total'] or 0
 
-    recent_orders = OrderItem.objects.select_related(
-        'menu_item').order_by('-order_date')[:5]
+    # Recent orders (from that range)
+    recent_orders = OrderItem.objects.filter(order_date__range=date_range)\
+        .select_related('menu_item')\
+        .order_by('-order_date')[:5]
 
-    # Most Ordered Menu Items
+    # Most Ordered Menu Items (for that range)
     most_ordered_items = (
-        OrderItem.objects.values('menu_item__name')
+        OrderItem.objects.filter(order_date__range=date_range)
+        .values('menu_item__name')
         .annotate(total_quantity=Sum('quantity'))
         .order_by('-total_quantity')[:10]
     )
-
-    # Waiter Transaction Summary for Today (filtered by transaction time)
+    total_customers = OrderTransaction.objects \
+        .exclude(customer_name__isnull=True) \
+        .exclude(customer_name__exact='') \
+        .values('customer_name') \
+        .distinct() \
+        .count()
+     
+    customers_today = OrderTransaction.objects \
+        .filter(created__range=(start_utc, end_utc)) \
+        .exclude(customer_name__isnull=True) \
+        .exclude(customer_name__exact='') \
+        .values('customer_name') \
+        .distinct() \
+        .count()
+        
+    # Waiter Summary
     waiter_summary = (
         OrderTransaction.objects
-        # Requires 'created_at' field in model
-        .filter(created__range=(start_utc, end_utc))
+        .filter(created__range=date_range)
         .filter(served_by__isnull=False)
         .exclude(served_by__exact='')
         .annotate(waiter_name=Lower('served_by'))
@@ -96,18 +111,18 @@ def dashboard(request):
     waiter_labels = [w['waiter_name'] for w in waiter_summary]
     waiter_counts = [w['transaction_count'] for w in waiter_summary]
 
-# Top Customer (Single Order)
+    # Top Customer (Single Order) in the time window
     top_customer_order = (
-        OrderItem.objects.values('order__customer_name', 'order__random_id')
+        OrderItem.objects.filter(order_date__range=date_range)
+        .values('order__customer_name', 'order__random_id')
         .annotate(total_order_value=Sum('total_price'))
         .order_by('-total_order_value')
         .first()
     )
 
-
-    # Top Customer Overall
+    # Top Customer Overall in the time window
     top_customer_overall = (
-        OrderItem.objects
+        OrderItem.objects.filter(order_date__range=date_range)
         .values('order__customer_name')
         .annotate(
             total_spent=Sum('total_price'),
@@ -115,7 +130,7 @@ def dashboard(request):
         )
         .order_by('-total_spent')
         .first()
-    )
+    )  
     return render(request, "dashboard.html", {
         "orderTodayCount": orderTodayCount,
         "orderCount": orderCount,
@@ -127,9 +142,9 @@ def dashboard(request):
         "top_customer_overall": top_customer_overall,
         'waiter_labels': waiter_labels,
         'waiter_counts': waiter_counts,
+        "total_customers": total_customers,
+        "customers_today": customers_today,
     })
-
-
 
 def load_menu_items(request):
     search_term = request.GET.get('term', '')  # optional: for search
