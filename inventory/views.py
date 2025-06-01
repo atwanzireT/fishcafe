@@ -47,40 +47,43 @@ from django.db.models.functions import Lower
 today = timezone.localdate()
 
 
+
 @login_required(login_url='/user/login/')
 def dashboard(request):
-    # Use Kampala time
     kampala_tz = pytz.timezone('Africa/Kampala')
     now_kampala = timezone.now().astimezone(kampala_tz)
-    today_kampala = now_kampala.date()
 
-    # Business day: 10:00 AM today to 9:59 AM tomorrow (in Kampala time)
-    start_local = kampala_tz.localize(
-        datetime.combine(today_kampala, time(10, 0)))
-    end_local = kampala_tz.localize(datetime.combine(
-        today_kampala + timedelta(days=1), time(9, 59, 59)))
+    # Determine business day based on whether it's before or after 10 AM
+    if now_kampala.time() < time(10, 0):
+        business_day = now_kampala.date() - timedelta(days=1)
+    else:
+        business_day = now_kampala.date()
 
-    # Convert to UTC for filtering (server time is UTC)
+    # Business day starts at 10:00 AM of the determined day and ends at 9:59 AM the next day
+    start_local = datetime.combine(business_day, time(10, 0, 0))
+    end_local = datetime.combine(business_day + timedelta(days=1), time(9, 59, 59))
+
+    start_local = kampala_tz.localize(start_local)
+    end_local = kampala_tz.localize(end_local)
+
+    # Convert to UTC for DB filtering
     start_utc = start_local.astimezone(pytz.UTC)
     end_utc = end_local.astimezone(pytz.UTC)
 
-    # Shared filter range
+    print("Business Day (UTC):", start_utc, "to", end_utc)
+
     date_range = (start_utc, end_utc)
 
-    # Metrics
-    orderTodayCount = OrderItem.objects.filter(
-        order_date__range=date_range).count()
+    orderTodayCount = OrderItem.objects.filter(order_date__range=date_range).count()
     orderCount = OrderItem.objects.count()
 
     today_total_amount = OrderItem.objects.filter(order_date__range=date_range) \
                                           .aggregate(total=Sum('total_price'))['total'] or 0
 
-    # Recent orders
     recent_orders = OrderItem.objects.filter(order_date__range=date_range) \
                                      .select_related('menu_item') \
                                      .order_by('-order_date')[:5]
 
-    # Most ordered menu items
     most_ordered_items = (
         OrderItem.objects.filter(order_date__range=date_range)
         .values('menu_item__name')
@@ -88,7 +91,6 @@ def dashboard(request):
         .order_by('-total_quantity')[:10]
     )
 
-    # Total distinct customers
     total_customers = (
         OrderTransaction.objects
         .exclude(customer_name__isnull=True)
@@ -98,7 +100,6 @@ def dashboard(request):
         .count()
     )
 
-    # Today's distinct customers
     customers_today = (
         OrderTransaction.objects
         .filter(created__range=date_range)
@@ -109,7 +110,6 @@ def dashboard(request):
         .count()
     )
 
-    # Waiter summary
     waiter_summary = (
         OrderTransaction.objects
         .filter(created__range=date_range)
@@ -124,7 +124,6 @@ def dashboard(request):
     waiter_labels = [w['waiter_name'] for w in waiter_summary]
     waiter_counts = [w['transaction_count'] for w in waiter_summary]
 
-    # Top customer by single order
     top_customer_order = (
         OrderItem.objects.filter(order_date__range=date_range)
         .values('order__customer_name', 'order__random_id')
@@ -133,7 +132,6 @@ def dashboard(request):
         .first()
     )
 
-    # Top customer overall in this period
     top_customer_overall = (
         OrderItem.objects.filter(order_date__range=date_range)
         .values('order__customer_name')
@@ -158,6 +156,8 @@ def dashboard(request):
         'waiter_counts': waiter_counts,
         "total_customers": total_customers,
         "customers_today": customers_today,
+        "business_start": start_local,
+        "business_end": end_local,
     })
 
 def load_menu_items(request):

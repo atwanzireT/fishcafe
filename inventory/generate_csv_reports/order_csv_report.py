@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, timezone as dt_timezone
 from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -9,25 +9,28 @@ from pytz import timezone as pytz_timezone
 
 @login_required(login_url='/user/login/')
 def export_orders_to_csv(request, time_period='daily'):
-    # Set timezone
-    local_tz = pytz_timezone('Africa/Kampala')
-    now_local = timezone.now().astimezone(local_tz)
-    today_local = now_local.date()
+    kampala_tz = pytz_timezone('Africa/Kampala')
+    now_kampala = timezone.now().astimezone(kampala_tz)
 
-    # Determine time range
+    # Determine business day: If before 10AM, business day is yesterday
+    if now_kampala.time() < time(10, 0):
+        business_day = now_kampala.date() - timedelta(days=1)
+    else:
+        business_day = now_kampala.date()
+
     if time_period == 'daily':
-        # Business day: 10 AM today to 9:59 AM tomorrow
-        start_local = timezone.make_aware(
-            datetime.combine(today_local, time(10, 0, 0)), local_tz)
-        end_local = timezone.make_aware(datetime.combine(
-            today_local + timedelta(days=1), time(9, 59, 0)), local_tz)
+        start_local = datetime.combine(business_day, time(10, 0, 0))
+        end_local = datetime.combine(
+            business_day + timedelta(days=1), time(9, 59, 59))
 
-        # For filename and heading
-        date_str = today_local.strftime('%Y-%m-%d')
-        next_day_str = (today_local + timedelta(days=1)).strftime('%Y-%m-%d')
+        start_aware = kampala_tz.localize(
+            start_local).astimezone(dt_timezone.utc)
+        end_aware = kampala_tz.localize(end_local).astimezone(dt_timezone.utc)
+
+        date_str = business_day.strftime('%Y-%m-%d')
+        next_day_str = (business_day + timedelta(days=1)).strftime('%Y-%m-%d')
         filename = f'orders_{date_str}_10AM_to_{next_day_str}_9AM.csv'
         heading = f'ORDERS REPORT ({date_str} 10:00AM to {next_day_str} 9:00AM)'
-
     else:
         today = timezone.localdate()
         if time_period == 'weekly':
@@ -50,21 +53,24 @@ def export_orders_to_csv(request, time_period='daily'):
         else:
             return HttpResponse("Invalid time period", status=400)
 
-        start_local = timezone.make_aware(datetime.combine(
-            start_date, datetime.min.time()), local_tz)
-        end_local = timezone.make_aware(datetime.combine(
-            today + timedelta(days=1), datetime.min.time()), local_tz)
+        start_local = datetime.combine(start_date, datetime.min.time())
+        end_local = datetime.combine(
+            today + timedelta(days=1), datetime.min.time())
 
-    # Prepare HTTP response
+        start_aware = kampala_tz.localize(
+            start_local).astimezone(dt_timezone.utc)
+        end_aware = kampala_tz.localize(end_local).astimezone(dt_timezone.utc)
+
+    # Prepare response
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     writer = csv.writer(response)
 
     # Report heading
-    writer.writerow([f'{heading}'])
-    writer.writerow([])  # blank line
+    writer.writerow([heading])
+    writer.writerow([])
 
-    # Column headers
+    # Headers
     column_headers = [
         'ORDER DATE', 'ORDER TIME', 'TRANSACTION ID',
         'CATEGORY', 'MENU ITEM', 'QUANTITY',
@@ -73,12 +79,12 @@ def export_orders_to_csv(request, time_period='daily'):
     ]
     writer.writerow(column_headers)
 
-    # Query data
+    # Fetch transactions
     order_transactions = OrderTransaction.objects.select_related(
         'dining_area', 'table', 'created_by'
     ).filter(
-        created__gte=start_local,
-        created__lt=end_local,
+        created__gte=start_aware,
+        created__lt=end_aware,
         payment_mode__in=["CASH", "MOMO PAY", "BANK CARD", "AIRTEL PAY"]
     )
 
@@ -90,9 +96,10 @@ def export_orders_to_csv(request, time_period='daily'):
             'menu_item__category').filter(order=order)
         for item in order_items:
             category_name = item.menu_item.category.name if item.menu_item and item.menu_item.category else 'N/A'
+            order_date_local = timezone.localtime(item.order_date, kampala_tz)
             writer.writerow([
-                timezone.localtime(item.order_date).strftime('%Y-%m-%d'),
-                timezone.localtime(item.order_date).strftime('%H:%M:%S'),
+                order_date_local.strftime('%Y-%m-%d'),
+                order_date_local.strftime('%H:%M:%S'),
                 order.random_id,
                 category_name,
                 item.menu_item.name if item.menu_item else 'N/A',
@@ -107,7 +114,7 @@ def export_orders_to_csv(request, time_period='daily'):
             total_sum += float(item.total_price)
             record_count += 1
 
-    # Summary section
+    # Summary
     writer.writerow([])
     writer.writerow(['SUMMARY'])
     writer.writerow([f'Total Records: {record_count}'])
