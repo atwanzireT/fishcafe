@@ -48,57 +48,68 @@ today = timezone.localdate()
 
 
 @login_required(login_url='/user/login/')
-def  dashboard(request):
-    local_tz = pytz.timezone('Africa/Kampala')
-    now_local = timezone.now().astimezone(local_tz)
-    today_local = now_local.date()
+def dashboard(request):
+    # Use Kampala time
+    kampala_tz = pytz.timezone('Africa/Kampala')
+    now_kampala = timezone.now().astimezone(kampala_tz)
+    today_kampala = now_kampala.date()
 
+    # Business day: 10:00 AM today to 9:59 AM tomorrow (in Kampala time)
+    start_local = kampala_tz.localize(
+        datetime.combine(today_kampala, time(10, 0)))
+    end_local = kampala_tz.localize(datetime.combine(
+        today_kampala + timedelta(days=1), time(9, 59, 59)))
 
-    order_date = timezone.now()
-
-    # Define business day: 10 AM today to 9 AM tomorrow
-    start_local = make_aware(datetime.combine(today_local, time(10, 0, 0)), local_tz)
-    end_local = make_aware(datetime.combine(today_local + timedelta(days=1), time(9, 59, 0)), local_tz)
+    # Convert to UTC for filtering (server time is UTC)
     start_utc = start_local.astimezone(pytz.UTC)
     end_utc = end_local.astimezone(pytz.UTC)
-    # Filter range
+
+    # Shared filter range
     date_range = (start_utc, end_utc)
-    
+
     # Metrics
     orderTodayCount = OrderItem.objects.filter(
-        order_date__range=(start_utc, end_utc)).count()
+        order_date__range=date_range).count()
     orderCount = OrderItem.objects.count()
-    today_total_amount = OrderItem.objects.filter(order_date__range=(start_utc, end_utc)) \
+
+    today_total_amount = OrderItem.objects.filter(order_date__range=date_range) \
                                           .aggregate(total=Sum('total_price'))['total'] or 0
 
-    # Recent orders (from that range)
-    recent_orders = OrderItem.objects.filter(order_date__range=date_range)\
-        .select_related('menu_item')\
-        .order_by('-order_date')[:5]
+    # Recent orders
+    recent_orders = OrderItem.objects.filter(order_date__range=date_range) \
+                                     .select_related('menu_item') \
+                                     .order_by('-order_date')[:5]
 
-    # Most Ordered Menu Items (for that range)
+    # Most ordered menu items
     most_ordered_items = (
         OrderItem.objects.filter(order_date__range=date_range)
         .values('menu_item__name')
         .annotate(total_quantity=Sum('quantity'))
         .order_by('-total_quantity')[:10]
     )
-    total_customers = OrderTransaction.objects \
-        .exclude(customer_name__isnull=True) \
-        .exclude(customer_name__exact='') \
-        .values('customer_name') \
-        .distinct() \
+
+    # Total distinct customers
+    total_customers = (
+        OrderTransaction.objects
+        .exclude(customer_name__isnull=True)
+        .exclude(customer_name__exact='')
+        .values('customer_name')
+        .distinct()
         .count()
-     
-    customers_today = OrderTransaction.objects \
-        .filter(created__range=(start_utc, end_utc)) \
-        .exclude(customer_name__isnull=True) \
-        .exclude(customer_name__exact='') \
-        .values('customer_name') \
-        .distinct() \
+    )
+
+    # Today's distinct customers
+    customers_today = (
+        OrderTransaction.objects
+        .filter(created__range=date_range)
+        .exclude(customer_name__isnull=True)
+        .exclude(customer_name__exact='')
+        .values('customer_name')
+        .distinct()
         .count()
-        
-    # Waiter Summary
+    )
+
+    # Waiter summary
     waiter_summary = (
         OrderTransaction.objects
         .filter(created__range=date_range)
@@ -113,7 +124,7 @@ def  dashboard(request):
     waiter_labels = [w['waiter_name'] for w in waiter_summary]
     waiter_counts = [w['transaction_count'] for w in waiter_summary]
 
-    # Top Customer (Single Order) in the time window
+    # Top customer by single order
     top_customer_order = (
         OrderItem.objects.filter(order_date__range=date_range)
         .values('order__customer_name', 'order__random_id')
@@ -122,7 +133,7 @@ def  dashboard(request):
         .first()
     )
 
-    # Top Customer Overall in the time window
+    # Top customer overall in this period
     top_customer_overall = (
         OrderItem.objects.filter(order_date__range=date_range)
         .values('order__customer_name')
@@ -132,7 +143,8 @@ def  dashboard(request):
         )
         .order_by('-total_spent')
         .first()
-    )  
+    )
+
     return render(request, "dashboard.html", {
         "orderTodayCount": orderTodayCount,
         "orderCount": orderCount,
