@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
+from django.utils.timezone import now
 import uuid
 import random
 import string
@@ -73,7 +73,7 @@ class OrderTransaction(models.Model):
     dining_area = models.ForeignKey(DiningArea, on_delete=models.SET_NULL, null=True, blank=True)
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True )
     special_notes = models.TextField(default="Null")
-    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    created = models.DateTimeField(default=now, blank=True, null=True)
     payment_mode = models.CharField(default="NO PAYMENT", max_length=50, choices=pay_mode)
     transaction_id = models.CharField(blank=True, null=True, max_length=100)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -111,7 +111,7 @@ class OrderItem(models.Model):
     ]
     order = models.ForeignKey(OrderTransaction, on_delete=models.CASCADE, related_name='order_items')
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, null=True, blank=True)
-    order_date = models.DateTimeField(auto_now_add=True)
+    order_date = models.DateTimeField(default=now)
     customer_name = models.CharField(max_length=255, blank=True, null=True, default="FishPoint Customer")
     dining_area = models.ForeignKey(DiningArea, on_delete=models.SET_NULL, null=True, blank=True)
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True)
