@@ -207,10 +207,20 @@ def order_transaction_payment(request, order_id):
 
 @login_required(login_url='/user/login/')
 def add_order(request):
-    today = localdate()
-    # unpaid_orders = OrderTransaction.objects.all()
-    unpaid_orders = OrderTransaction.objects.filter(created=today, payment_mode="NO PAYMENT").order_by('-id')
-    # last_transaction_order = unpaid_orders.first()  # Get the latest unpaid order
+    # Get local date and convert to start and end of day in UTC
+    kampala_tz = pytz.timezone("Africa/Kampala")
+    today_local = timezone.now().astimezone(kampala_tz).date()
+
+    start_of_day = kampala_tz.localize(datetime.combine(today_local, time.min))
+    end_of_day = kampala_tz.localize(datetime.combine(today_local, time.max))
+
+    start_utc = start_of_day.astimezone(pytz.UTC)
+    end_utc = end_of_day.astimezone(pytz.UTC)
+
+    unpaid_orders = OrderTransaction.objects.filter(
+        created__range=(start_utc, end_utc),
+        payment_mode="NO PAYMENT"
+    ).order_by('-id')
    
     menu_items = MenuItem.objects.all().values('id', 'name', 'price') 
     if request.method == 'POST':
