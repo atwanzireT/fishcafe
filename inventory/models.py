@@ -73,7 +73,7 @@ class OrderTransaction(models.Model):
     dining_area = models.ForeignKey(DiningArea, on_delete=models.SET_NULL, null=True, blank=True)
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True )
     special_notes = models.TextField(default="Null")
-    created = models.DateField(auto_now_add=True, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     payment_mode = models.CharField(default="NO PAYMENT", max_length=50, choices=pay_mode)
     transaction_id = models.CharField(blank=True, null=True, max_length=100)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
