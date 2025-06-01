@@ -1,3 +1,4 @@
+from django.utils.timezone import make_aware
 import io
 import os
 import requests
@@ -52,16 +53,17 @@ def  dashboard(request):
     now_local = timezone.now().astimezone(local_tz)
     today_local = now_local.date()
 
+
+    order_date = timezone.now()
+
     # Define business day: 10 AM today to 9 AM tomorrow
-    start_local = local_tz.localize(
-        datetime.combine(today_local, time(10, 0, 0)))
-    end_local = local_tz.localize(datetime.combine(
-        today_local, time(9, 59, 0))) + timezone.timedelta(days=1)
+    start_local = make_aware(datetime.combine(today_local, time(10, 0, 0)), local_tz)
+    end_local = make_aware(datetime.combine(today_local + timedelta(days=1), time(9, 59, 0)), local_tz)
     start_utc = start_local.astimezone(pytz.UTC)
     end_utc = end_local.astimezone(pytz.UTC)
     # Filter range
     date_range = (start_utc, end_utc)
-
+    
     # Metrics
     orderTodayCount = OrderItem.objects.filter(
         order_date__range=(start_utc, end_utc)).count()
