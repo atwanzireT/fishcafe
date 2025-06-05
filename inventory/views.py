@@ -1,3 +1,4 @@
+from django.db.models import Count, Q
 from django.utils.timezone import make_aware
 import io
 import os
@@ -50,6 +51,7 @@ today = timezone.localdate()
 
 @login_required(login_url='/user/login/')
 def dashboard(request):
+    today = timezone.localdate()
     kampala_tz = pytz.timezone('Africa/Kampala')
     now_kampala = timezone.now().astimezone(kampala_tz)
 
@@ -156,7 +158,7 @@ def dashboard(request):
         'waiter_counts': waiter_counts,
         "total_customers": total_customers,
         "customers_today": customers_today,
-        "business_start": start_local,
+        "today": today,
         "business_end": end_local,
     })
 
@@ -300,17 +302,33 @@ def getOrder(request, id):
 
 
 # EDIT ORDER VIEW
+# @login_required(login_url='/user/login/')
+# def edit_order(request, id):
+#     order = get_object_or_404(OrderItem, id=id)
+#     if request.method == 'POST':
+#         form = OrderForm(request.POST, instance=order)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('orders')
+#     else:
+#         form = OrderForm(instance=order)
+#     return render(request, 'edit_order.html', {'form': form})
 @login_required(login_url='/user/login/')
 def edit_order(request, id):
-    order = get_object_or_404(OrderItem, id=id)
+    order_item = get_object_or_404(OrderItem, id=id)
+
     if request.method == 'POST':
-        form = OrderForm(request.POST, instance=order)
+        form = OrderUpdateForm(request.POST, instance=order_item)
         if form.is_valid():
             form.save()
-            return redirect('orders')
+            # change to your actual redirect target
+            return redirect('order_list')
     else:
-        form = OrderForm(instance=order)
-    return render(request, 'edit_order.html', {'form': form})
+        form = OrderUpdateForm(instance=order_item)
+
+    return render(request, 'edit_order.html', {'form': form, 'order_item': order_item})
+
+
 
 # DELETE ORDER VIEW
 @login_required(login_url='/user/login/')
@@ -328,34 +346,35 @@ def update_order_status(request, order_id):
     order = get_object_or_404(OrderItem, id=order_id)
 
     if request.method == 'POST':
-        form = OrderStatusUpdateForm(request.POST, instance=order)
+        form = OrderUpdateForm(request.POST, instance=order)
         if form.is_valid():
             form.save()
             messages.success(request, f"Order {order.order.id} status updated successfully!")
             return redirect('order_list')  # Redirect to the order list or desired page
     else:
-        form = OrderStatusUpdateForm(instance=order)
+        form = OrderUpdateForm(instance=order)
 
     return render(request, 'order_status_update.html', {'form': form, 'order': order})
 
 #ORDERTRANSACTIONS
 
+
 @login_required(login_url="/user/login/")
 def orderTransactions(request):
-
-    
-    # orders_list = OrderTransaction.objects.all().order_by('-updated', '-id')
-   
-    orders_list = OrderTransaction.objects.using('default').filter(payment_mode="NO PAYMENT").order_by('-updated', '-id')
+    # Filter only transactions with NO PAYMENT and exclude those where all items are cancelled
+    orders_list = (
+        OrderTransaction.objects.using('default')
+        .filter(payment_mode="NO PAYMENT")
+        .annotate(non_cancelled_items=Count('order_items', filter=~Q(order_items__status='Cancelled')))
+        .filter(non_cancelled_items__gt=0)
+        .order_by('-updated', '-id')
+    )
 
     paginator = Paginator(orders_list, 10)
-    
-    # Get the page number from the request
     page_number = request.GET.get('page')
-
-    # Get the corresponding page
     orders_list = paginator.get_page(page_number)
-    return render(request, "ordertransactions.html", {"orders_list":orders_list})
+
+    return render(request, "ordertransactions.html", {"orders_list": orders_list})
     
 #CLEARED ORDERS
 @login_required(login_url="/user/login/")

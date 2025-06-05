@@ -1,70 +1,372 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-
-
-<div class="card">
-    <div class="card-body">
-        <div class="row">
-            <h4 class="fw-semibold mb-4">Reports</h4>
-            <div class="container mt-5">
-                <div class="row">
-                    <div class="col-auto">
-                        <h6>Export Orders Report</h6>
-                        <p>Select a report type to download:</p>
-
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><a href="{% url 'export_orders' 'daily' %}">Export Today's
-                                    Orders</a></li>
-                            <li class="list-group-item"><a href="{% url 'export_orders' 'weekly' %}">Export This Week's
-                                    Orders</a></li>
-                            <li class="list-group-item"><a href="{% url 'export_orders' 'monthly' %}">Export This
-                                    Month's Orders</a></li>
-                            <li class="list-group-item"><a href="{% url 'export_orders' 'biannual' %}">Export This
-                                    6-Month Period's Orders</a></li>
-                            <li class="list-group-item"><a href="{% url 'export_orders' 'annual' %}">Export This Year's
-                                    Orders</a></li>
-                            <li class="list-group-item"><a href="/manager/paid-orders/">Export Paid Order</a></li>
-                            <li class="list-group-item"><a href="/manager/general-orders/">Export General
-                                    Order</a></li>
-                        </ul>
-
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-auto">
-                        <h6>Export Expenses Report</h6>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><a href="{% url 'export_expenses' 'daily' %}">Export Today's Expenses</a></li>
-                            <li class="list-group-item"><a href="{% url 'export_expenses' 'weekly' %}">Export This Week's Expenses</a></li>
-                            <li class="list-group-item"><a href="{% url 'export_expenses' 'monthly' %}">Export This Month's Expenses</a></li>
-                            <li class="list-group-item"><a href="{% url 'export_expenses' 'biannual' %}">Export This 6-Month Period's Expenses</a></li>
-                            <li class="list-group-item"><a href="{% url 'export_expenses' 'annual' %}">Export This Year's Expenses</a></li>
-                        </ul>
-                    </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-bar me-2"></i>Reports Dashboard
+                    </h4>
+                    <p class="mb-0 mt-1 opacity-75">Generate and export comprehensive business reports</p>
                 </div>
                 
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <!-- Orders Reports Section -->
+                        <div class="col-lg-4 col-md-6">
+                            <div class="report-section h-100">
+                                <div class="section-header mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-wrapper bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-shopping-cart text-success"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1 fw-semibold text-success">Orders Reports</h5>
+                                            <p class="mb-0 text-muted small">Export order data by time period</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="report-links">
+                                    <div class="list-group list-group-flush border rounded">
+                                        <a href="{% url 'export_orders' 'daily' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar-day text-primary me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">Today's Orders</div>
+                                                <small class="text-muted">Current day exports</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="{% url 'export_orders' 'weekly' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar-week text-info me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">This Week's Orders</div>
+                                                <small class="text-muted">7-day period exports</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="{% url 'export_orders' 'monthly' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar-alt text-warning me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">This Month's Orders</div>
+                                                <small class="text-muted">Monthly period exports</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="{% url 'export_orders' 'biannual' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar text-secondary me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">6-Month Orders</div>
+                                                <small class="text-muted">Biannual period exports</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="{% url 'export_orders' 'annual' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar-check text-success me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">This Year's Orders</div>
+                                                <small class="text-muted">Annual period exports</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="/manager/paid-orders/" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-credit-card text-success me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">Paid Orders</div>
+                                                <small class="text-muted">Completed payment exports</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="/manager/general-orders/" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-list-ul text-primary me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">General Orders</div>
+                                                <small class="text-muted">All order types export</small>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="row mt-3">
-                    <div class="col-auto">
-                        <h6>Export Store Report</h6>
+                        <!-- Expenses Reports Section -->
+                        <div class="col-lg-4 col-md-6">
+                            <div class="report-section h-100">
+                                <div class="section-header mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-wrapper bg-danger bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-receipt text-danger"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1 fw-semibold text-danger">Expenses Reports</h5>
+                                            <p class="mb-0 text-muted small">Track and export expense data</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="report-links">
+                                    <div class="list-group list-group-flush border rounded">
+                                        <a href="{% url 'export_expenses' 'daily' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar-day text-primary me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">Today's Expenses</div>
+                                                <small class="text-muted">Current day expenses</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="{% url 'export_expenses' 'weekly' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar-week text-info me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">This Week's Expenses</div>
+                                                <small class="text-muted">7-day expense summary</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="{% url 'export_expenses' 'monthly' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar-alt text-warning me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">This Month's Expenses</div>
+                                                <small class="text-muted">Monthly expense report</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="{% url 'export_expenses' 'biannual' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar text-secondary me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">6-Month Expenses</div>
+                                                <small class="text-muted">Biannual expense data</small>
+                                            </div>
+                                        </a>
+                                        
+                                        <a href="{% url 'export_expenses' 'annual' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <i class="fas fa-calendar-check text-success me-3"></i>
+                                            <div>
+                                                <div class="fw-medium">This Year's Expenses</div>
+                                                <small class="text-muted">Annual expense summary</small>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><a href="/store/export_csv/products/">Products Export</a></li>
-                            <li class="list-group-item"><a href="/store/export_csv/batches/">Batches Export</a></li>
-                            <li class="list-group-item"><a href="/store/export_csv/issued-products/">Issued Products
-                                    Export</a></li>
+                        <!-- Store Reports Section -->
+                        <div class="col-lg-4 col-md-6">
+                            <div class="report-section h-100">
+                                <div class="section-header mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-wrapper bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="fas fa-store text-info"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1 fw-semibold text-info">Store Reports</h5>
+                                            <p class="mb-0 text-muted small">Inventory and product data exports</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="report-links">
+                                    <div class="list-group list-group-flush border rounded">
+                                  
+                                      <!-- Products Export (default: daily) -->
+                                      <a href="/store/export_csv/products/daily/" 
+                                         class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fas fa-box text-primary me-3"></i>
+                                        <div>
+                                          <div class="fw-medium">Products Export (Daily)</div>
+                                          <small class="text-muted">Complete product catalog (today)</small>
+                                        </div>
+                                      </a>
+                                  
+                                      <a href="/store/export_csv/products/weekly/" 
+                                         class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fas fa-box text-primary me-3"></i>
+                                        <div>
+                                          <div class="fw-medium">Products Export (Weekly)</div>
+                                          <small class="text-muted">Last 7 days’ products</small>
+                                        </div>
+                                      </a>
+                                  
+                                      <a href="/store/export_csv/products/monthly/" 
+                                         class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fas fa-box text-primary me-3"></i>
+                                        <div>
+                                          <div class="fw-medium">Products Export (Monthly)</div>
+                                          <small class="text-muted">This month’s products</small>
+                                        </div>
+                                      </a>
+                                  
+                                      <!-- Batches Export -->
+                                      <a href="/store/export_csv/batches/daily/" 
+                                         class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fas fa-layer-group text-warning me-3"></i>
+                                        <div>
+                                          <div class="fw-medium">Batches Export (Daily)</div>
+                                          <small class="text-muted">Batches received today</small>
+                                        </div>
+                                      </a>
+                                  
+                                      <a href="/store/export_csv/batches/weekl y/" 
+                                         class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fas fa-layer-group text-warning me-3"></i>
+                                        <div>
+                                          <div class="fw-medium">Batches Export (Weekly)</div>
+                                          <small class="text-muted">Batches this week</small>
+                                        </div>
+                                      </a>
+                                  
+                                      <a href="/store/export_csv/batches/monthly/" 
+                                         class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fas fa-layer-group text-warning me-3"></i>
+                                        <div>
+                                          <div class="fw-medium">Batches Export (Monthly)</div>
+                                          <small class="text-muted">Batches this month</small>
+                                        </div>
+                                      </a>
+                                  
+                                      <!-- Issued Products Export -->
+                                      <a href="/store/export_csv/issued-products/daily/" 
+                                         class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fas fa-shipping-fast text-success me-3"></i>
+                                        <div>
+                                          <div class="fw-medium">Issued Products (Daily)</div>
+                                          <small class="text-muted">Items issued today</small>
+                                        </div>
+                                      </a>
+                                  
+                                      <a href="/store/export_csv/issued-products/weekly/" 
+                                         class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fas fa-shipping-fast text-success me-3"></i>
+                                        <div>
+                                          <div class="fw-medium">Issued Products (Weekly)</div>
+                                          <small class="text-muted">Items issued this week</small>
+                                        </div>
+                                      </a>
+                                  
+                                      <a href="/store/export_csv/issued-products/monthly/" 
+                                         class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fas fa-shipping-fast text-success me-3"></i>
+                                        <div>
+                                          <div class="fw-medium">Issued Products (Monthly)</div>
+                                          <small class="text-muted">Items issued this month</small>
+                                        </div>
+                                      </a>
+                                  
+                                    </div>
+                                  </div>
+                                  
+                            </div>
+                        </div>
+                    </div>
 
-                        </ul>
+                    <!-- Additional Information -->
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <div class="alert alert-light border">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-info-circle text-primary me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Export Information</h6>
+                                        <p class="mb-0 text-muted">
+                                            All reports are exported in CSV format for easy analysis. Click on any report type above to download the corresponding data.
+                                            Files are generated in real-time with the most current information available.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Bootstrap JS, Popper.js, and jQuery -->
-            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
         </div>
     </div>
 </div>
+
+<!-- Custom Styles -->
+<style>
+.report-section {
+    transition: transform 0.2s ease-in-out;
+}
+
+.report-section:hover {
+    transform: translateY(-2px);
+}
+
+.icon-wrapper {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.list-group-item-action:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    border-left: 3px solid #007bff;
+    transform: translateX(5px);
+    transition: all 0.2s ease-in-out;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+.section-header {
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+@media (max-width: 768px) {
+    .col-lg-4 {
+        margin-bottom: 2rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+}
+</style>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
+<script>
+// Add smooth scrolling and loading states
+document.addEventListener('DOMContentLoaded', function() {
+    // Add loading state to export links
+    const exportLinks = document.querySelectorAll('.list-group-item-action');
+    
+    exportLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const icon = this.querySelector('i');
+            const originalClass = icon.className;
+            
+            // Show loading state
+            icon.className = 'fas fa-spinner fa-spin me-3';
+            
+            // Reset after 2 seconds (adjust based on your export time)
+            setTimeout(() => {
+                icon.className = originalClass;
+            }, 2000);
+        });
+    });
+    
+    // Add tooltips for better UX
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => {
+        new bootstrap.Tooltip(tooltip);
+    });
+});
+</script>
 
 {% endblock content %}

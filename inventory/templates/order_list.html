@@ -328,6 +328,11 @@
                                 <a href="/manager/order/{{ order.id }}/update-status/" class="btn btn-sm btn-outline-warning">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
+                                data-bs-target="#editOrderModal" data-order-id="{{ order.id }}"
+                                data-order-status="{{ order.status }}">
+                                <i class="fas fa-edit"></i> Update
+                            </button>
                             </td>
                         </tr>
                         {% empty %}
