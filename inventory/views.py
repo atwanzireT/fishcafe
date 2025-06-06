@@ -76,11 +76,17 @@ def dashboard(request):
 
     date_range = (start_utc, end_utc)
 
-    orderTodayCount = OrderItem.objects.filter(order_date__range=date_range).count()
+  
     orderCount = OrderItem.objects.count()
 
-    today_total_amount = OrderItem.objects.filter(order_date__range=date_range) \
-                                          .aggregate(total=Sum('total_price'))['total'] or 0
+# Exclude cancelled orders from today's count
+    orderTodayCount = OrderItem.objects.filter(
+        order_date__range=date_range
+    ).exclude(status='Cancelled').count()
+
+    today_total_amount = OrderItem.objects.filter(
+        Q(order_date__range=date_range) & ~Q(status='Cancelled')
+    ).aggregate(total=Sum('total_price'))['total'] or 0
 
     recent_orders = OrderItem.objects.filter(order_date__range=date_range) \
                                      .select_related('menu_item') \
@@ -357,7 +363,9 @@ def update_order_status(request, order_id):
     return render(request, 'order_status_update.html', {'form': form, 'order': order})
 
 #ORDERTRANSACTIONS
-
+                    #  <a href="/manager/order/{{ order.id }}/update-status/" class="btn btn-sm btn-outline-secondary">
+                    #     <i class="fas fa-eye"></i> Edit
+                    # </a>
 
 @login_required(login_url="/user/login/")
 def orderTransactions(request):

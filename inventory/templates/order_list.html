@@ -9,17 +9,17 @@
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         transition: all 0.3s ease;
     }
-    
+
     .card-header {
         background-color: #fff;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         padding: 1.5rem 1.5rem 1rem;
     }
-    
+
     .card-body {
         padding: 1.5rem;
     }
-    
+
     table {
         font-size: 0.925rem;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -27,7 +27,7 @@
         border-spacing: 0;
         width: 100%;
     }
-    
+
     thead th {
         background-color: #f8f9fa;
         color: #495057;
@@ -38,25 +38,25 @@
         padding: 1rem;
         border-bottom: 2px solid #e9ecef;
     }
-    
+
     tbody td {
         padding: 1rem;
         vertical-align: middle;
         border-bottom: 1px solid #e9ecef;
     }
-    
+
     tbody tr:last-child td {
         border-bottom: none;
     }
-    
+
     tbody tr {
         transition: background-color 0.2s;
     }
-    
+
     tbody tr:hover {
         background-color: #f8f9fa;
     }
-    
+
     /* Button styling */
     .btn {
         border-radius: 8px;
@@ -70,64 +70,64 @@
         justify-content: center;
         gap: 0.5rem;
     }
-    
+
     .btn-primary {
         background-color: #4361ee;
         border-color: #4361ee;
     }
-    
+
     .btn-primary:hover {
         background-color: #3a56d5;
         border-color: #3a56d5;
     }
-    
+
     .btn-success {
         background-color: #38b000;
         border-color: #38b000;
     }
-    
+
     .btn-success:hover {
         background-color: #2e9000;
         border-color: #2e9000;
     }
-    
+
     .btn-info {
         background-color: #3f8efc;
         border-color: #3f8efc;
         color: white;
     }
-    
+
     .btn-info:hover {
         background-color: #2a7fe7;
         border-color: #2a7fe7;
     }
-    
+
     .btn-sm {
         padding: 0.4rem 0.75rem;
         font-size: 0.85rem;
         border-radius: 6px;
     }
-    
+
     .btn-outline-primary {
         color: #4361ee;
         border-color: #4361ee;
     }
-    
+
     .btn-outline-primary:hover {
         background-color: #4361ee;
         color: white;
     }
-    
+
     .btn-outline-warning {
         color: #ff9500;
         border-color: #ff9500;
     }
-    
+
     .btn-outline-warning:hover {
         background-color: #ff9500;
         color: white;
     }
-    
+
     /* Badge styling */
     .badge {
         font-weight: 500;
@@ -138,27 +138,27 @@
         align-items: center;
         gap: 0.375rem;
     }
-    
+
     .badge-completed {
         background-color: rgba(56, 176, 0, 0.1);
         color: #38b000;
     }
-    
+
     .badge-pending {
         background-color: rgba(255, 149, 0, 0.1);
         color: #ff9500;
     }
-    
+
     .badge-processing {
         background-color: rgba(63, 142, 252, 0.1);
         color: #3f8efc;
     }
-    
+
     /* Pagination styling */
     .pagination {
         margin-top: 1.5rem;
     }
-    
+
     .page-link {
         border-radius: 6px;
         margin: 0 0.15rem;
@@ -166,12 +166,12 @@
         font-weight: 500;
         padding: 0.5rem 0.75rem;
     }
-    
+
     .page-item.active .page-link {
         background-color: #4361ee;
         border-color: #4361ee;
     }
-    
+
     /* Responsive container */
     .table-container {
         margin-top: 1.5rem;
@@ -179,19 +179,19 @@
         overflow: hidden;
         border: 1px solid #e9ecef;
     }
-    
+
     .search-box {
         position: relative;
         max-width: 300px;
     }
-    
+
     .search-box input {
         padding-left: 2.5rem;
         border-radius: 8px;
         border: 1px solid #e9ecef;
         height: 42px;
     }
-    
+
     .search-icon {
         position: absolute;
         left: 0.75rem;
@@ -199,41 +199,42 @@
         transform: translateY(-50%);
         color: #6c757d;
     }
-    
+
     .status-filter {
         max-width: 160px;
     }
-    
+
     .action-cell {
         white-space: nowrap;
     }
-    
+
     .page-header {
         display: flex;
         align-items: center;
         margin-bottom: 1rem;
     }
-    
+
     .page-title {
         margin-bottom: 0;
         font-weight: 700;
         color: #212529;
     }
-    
+
     .dashboard-icon {
         margin-right: 0.75rem;
         color: #4361ee;
     }
-    
+
     @media (max-width: 768px) {
         .table-container {
             border-radius: 8px;
         }
-        
-        tbody td, thead th {
+
+        tbody td,
+        thead th {
             padding: 0.75rem;
         }
-        
+
         .page-header {
             flex-direction: column;
             align-items: flex-start;
@@ -250,15 +251,12 @@
         </div>
         <p class="text-muted small mb-0">View, manage, and track all orders in your system</p>
     </div>
-    
+
     <div class="card-body">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
             <div class="d-flex flex-wrap gap-2 mb-3 mb-md-0">
                 <a href="/manager/add-order/" class="btn btn-primary">
                     <i class="fas fa-plus-circle"></i> Create Order
-                </a>
-                <a href="/manager/orders_transactions/" class="btn btn-success">
-                    <i class="fas fa-box"></i> New Transactions
                 </a>
                 <a href="/manager/cleared_transactions/" class="btn btn-info">
                     <i class="fas fa-check-circle"></i> Cleared Transactions
@@ -267,7 +265,7 @@
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" class="form-control" placeholder="Search orders...">
                 </div>
-                
+
                 <select class="form-select status-filter">
                     <option value="">All Statuses</option>
                     <option value="Completed">Completed</option>
@@ -276,81 +274,77 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="table-container">
             <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Table</th>
-                            <th>Menu Item</th>
-                            <th>Total Price</th>
-                            <th>Status</th>
-                            <th>Order Date</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for order in orders_list %}
-                        <tr>
-                            <td><span class="fw-medium">{{ order.order.random_id }}</span></td>
-                            <td>Table {{ order.order.table }}</td>
-                            <td>{{ order.menu_item }}</td>
-                            <td>Ush {{ order.total_price|intcomma }}</td>
-                            <td>
-                                {% if order.status == 'Completed' %}
-                                <span class="badge badge-completed">
-                                    <i class="fas fa-check-circle"></i>
-                                    {{ order.status }}
-                                </span>
-                                {% elif order.status == 'Pending' %}
-                                <span class="badge badge-pending">
-                                    <i class="fas fa-clock"></i>
-                                    {{ order.status }}
-                                </span>
-                                {% elif order.status == 'Processing' %}
-                                <span class="badge badge-processing">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                    {{ order.status }}
-                                </span>
-                                {% else %}
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary">
-                                    {{ order.status }}
-                                </span>
-                                {% endif %}
-                            </td>
-                            <td>{{ order.order_date }}</td>
-                            <td class="action-cell text-center">
-                                <a href="/manager/orders/{{ order.id }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i> View
-                                </a>
-                                <a href="/manager/order/{{ order.id }}/update-status/" class="btn btn-sm btn-outline-warning">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
-                                data-bs-target="#editOrderModal" data-order-id="{{ order.id }}"
-                                data-order-status="{{ order.status }}">
-                                <i class="fas fa-edit"></i> Update
-                            </button>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center py-4">
-                                <div class="d-flex flex-column align-items-center">
-                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                    <p class="lead mb-0">No orders available</p>
-                                    <p class="text-muted small">Create a new order to get started</p>
-                                    <a href="/manager/add-order/" class="btn btn-primary mt-2">
-                                        <i class="fas fa-plus-circle"></i> Create Order
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <table class="table" style="font-size: 0.85rem;">
+                <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Table</th>
+                    <th>Menu Item</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Order Date</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for order in orders_list %}
+                <tr>
+                    <td><span class="fw-medium">{{ order.order.random_id }}</span></td>
+                    <td>Table {{ order.order.table }}</td>
+                    <td>{{ order.menu_item }}</td>
+                    <td>Ush {{ order.total_price|intcomma }}</td>
+                    <td>
+                    {% if order.status == 'Completed' %}
+                    <span class="badge badge-completed">
+                        <i class="fas fa-check-circle"></i>
+                        {{ order.status }}
+                    </span>
+                    {% elif order.status == 'Pending' %}
+                    <span class="badge badge-pending">
+                        <i class="fas fa-clock"></i>
+                        {{ order.status }}
+                    </span>
+                    {% elif order.status == 'Processing' %}
+                    <span class="badge badge-processing">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        {{ order.status }}
+                    </span>
+                    {% else %}
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary">
+                        {{ order.status }}
+                    </span>
+                    {% endif %}
+                    </td>
+                    <td>{{ order.order_date }}</td>
+                    <td class="action-cell text-center">
+                    <a href="/manager/orders/{{ order.id }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                     <a href="/manager/order/{{ order.id }}/update-status/" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-eye"></i> Edit
+                    </a>
+
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="lead mb-0">No orders available</p>
+                        <p class="text-muted small">Create a new order to get started</p>
+                        <a href="/manager/add-order/" class="btn btn-primary mt-2">
+                        <i class="fas fa-plus-circle"></i> Create Order
+                        </a>
+                    </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
             </div>
         </div>
 
@@ -370,35 +364,116 @@
                 {% endif %}
 
                 {% for page_num in orders_list.paginator.page_range %}
-                {% if page_num >= orders_list.number|add:-2 and page_num <= orders_list.number|add:2 %}
-                <li class="page-item {% if page_num == orders_list.number %}active{% endif %}">
+                {% if page_num >= orders_list.number|add:-2 and page_num <= orders_list.number|add:2 %} <li
+                    class="page-item {% if page_num == orders_list.number %}active{% endif %}">
                     <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                </li>
-                {% elif page_num == 1 or page_num == orders_list.paginator.num_pages %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                </li>
-                {% elif page_num == orders_list.number|add:-3 or page_num == orders_list.number|add:3 %}
-                <li class="page-item disabled"><span class="page-link">...</span></li>
-                {% endif %}
-                {% endfor %}
+                    </li>
+                    {% elif page_num == 1 or page_num == orders_list.paginator.num_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                    </li>
+                    {% elif page_num == orders_list.number|add:-3 or page_num == orders_list.number|add:3 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                    {% endfor %}
 
-                {% if orders_list.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ orders_list.next_page_number }}" aria-label="Next">
-                        <i class="fas fa-angle-right"></i>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ orders_list.paginator.num_pages }}" aria-label="Last">
-                        <i class="fas fa-angle-double-right"></i>
-                    </a>
-                </li>
-                {% endif %}
+                    {% if orders_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders_list.next_page_number }}" aria-label="Next">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders_list.paginator.num_pages }}" aria-label="Last">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
             </ul>
         </nav>
     </div>
 </div>
+
+<!-- Edit Order Modal -->
+<div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="editOrderForm" method="POST">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editOrderModalLabel">Edit Order Status</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="modalOrderId" name="order_id">
+          <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-select" name="status" id="modalOrderStatus" required>
+              <option value="Pending">Pending</option>
+              <option value="Preparing">Preparing</option>
+              <option value="Cooked">Completed</option>
+              <option value="Served">Served</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Status</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const editOrderModal = document.getElementById('editOrderModal');
+
+  // Load data into modal when triggered
+  editOrderModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const orderId = button.getAttribute('data-order-id');
+    const orderStatus = button.getAttribute('data-order-status');
+
+    document.getElementById('modalOrderId').value = orderId;
+    document.getElementById('modalOrderStatus').value = orderStatus;
+  });
+
+  // Handle AJAX form submission
+  document.getElementById('editOrderForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const orderId = document.getElementById('modalOrderId').value;
+    const status = document.getElementById('modalOrderStatus').value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch(`/manager/order/${orderId}/update-status/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrfToken,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        status: status
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        // Close modal and reload
+        const modal = bootstrap.Modal.getInstance(editOrderModal);
+        modal.hide();
+        location.reload(); // refresh to update the table
+      } else {
+        alert('Failed to update order status.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error submitting form.');
+    });
+  });
+</script>
+
 
 <!-- Font Awesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -409,35 +484,35 @@
 
 <script>
     // Simple search functionality
-    document.querySelector('.search-box input').addEventListener('keyup', function() {
+    document.querySelector('.search-box input').addEventListener('keyup', function () {
         let searchText = this.value.toLowerCase();
         let tableRows = document.querySelectorAll('tbody tr');
-        
+
         tableRows.forEach(row => {
             let found = false;
             let cells = row.querySelectorAll('td');
-            
+
             cells.forEach(cell => {
                 if (cell.textContent.toLowerCase().includes(searchText)) {
                     found = true;
                 }
             });
-            
+
             row.style.display = found ? '' : 'none';
         });
     });
-    
+
     // Filter by status
-    document.querySelector('.status-filter').addEventListener('change', function() {
+    document.querySelector('.status-filter').addEventListener('change', function () {
         let statusFilter = this.value.toLowerCase();
         let tableRows = document.querySelectorAll('tbody tr');
-        
+
         tableRows.forEach(row => {
             if (!statusFilter) {
                 row.style.display = '';
                 return;
             }
-            
+
             let statusCell = row.querySelector('td:nth-child(5)');
             if (statusCell && statusCell.textContent.trim().toLowerCase().includes(statusFilter)) {
                 row.style.display = '';

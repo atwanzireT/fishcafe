@@ -16,13 +16,13 @@ class SupplierForm(forms.ModelForm):
     class Meta:
         model = Supplier
         fields = [
-            'name', 'category', 'product', 'email', 'phone_number',
+            'name', 'category', 'contact_info', 'email', 'phone_number', 
             'address', 'city', 'country', 'is_verified', 'is_active'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Supplier Name'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
-            'product': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'contact_info': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Contact Information', 'rows': 3}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
             'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Address'}),
@@ -31,6 +31,7 @@ class SupplierForm(forms.ModelForm):
             'is_verified': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
 
 class ProductForm(forms.ModelForm):
     class Meta:

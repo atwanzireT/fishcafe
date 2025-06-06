@@ -16,6 +16,27 @@ class Category(models.Model):
         return self.name
 
 
+class Supplier(models.Model):
+    name = models.CharField(max_length=255)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="suppliers")
+    contact_info = models.TextField()
+    email = models.EmailField(max_length=255, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_verified = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_products(self):
+        return self.product_set.all()
+
+
 class Product(models.Model):
     STOCK_CHOICES = [
         ('in_stock', 'In Stock'),
@@ -108,29 +129,6 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Supplier(models.Model):
-    name = models.CharField(max_length=255)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="suppliers")
-    product = models.ManyToManyField(Product, related_name='suppliers')
-    email = models.EmailField(max_length=255, blank=True, null=True)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-    address = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)
-    country = models.CharField(max_length=100, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_verified = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name
-
-    def get_products(self):
-        return self.product_set.all()
-
-
 
 class Batch(models.Model):
     product = models.ForeignKey(

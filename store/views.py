@@ -56,7 +56,7 @@ def new_product(request):
 @login_required(login_url='/user/login/')
 def suppliers(request):
     suppliers = Supplier.objects.all()
-    return render(request, 'list/supplierlist.html', {'suppliers': suppliers})
+    return render(request, 'list/supplierlist.html', {'suppfliers': suppliers})
 
 
 @login_required(login_url='/user/login/')
@@ -64,24 +64,9 @@ def add_supplier(request):
     form = SupplierForm(request.POST or None)
     if form.is_valid():
         form.save()
-       
         return redirect('supplier_list')
     return render(request, 'store/add_suppiler.html', {'form': form})
 
-
-@login_required(login_url='/user/login/')
-def add_supplier(request):
-    if request.method == 'POST':
-        form = SupplierForm(request.POST)
-        if form.is_valid():
-            supplier = form.save(commit=False)
-            supplier.save()
-            form.save_m2m()  # ✅ Save ManyToMany relations!
-            return redirect('supplier_list')
-    else:
-        form = SupplierForm()
-
-    return render(request, 'store/add_suppiler.html ',{'form': form})
 @login_required(login_url='/user/login/')
 def add_category(request):
     form = CategoryForm(request.POST or None)

@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div>
     <h5 class="card-title fw-semibold mb-4">Add New Supplier</h5>
 
+    <!-- Center the card and make it more spacious -->
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
@@ -10,61 +12,7 @@
                     <div class="card-body">
                         <form method="post" class="row g-3">
                             {% csrf_token %}
-
-                            <!-- Name -->
-                            <div class="col-md-12">
-                                {{ form.name.label_tag }}
-                                {{ form.name }}
-                                {% for error in form.name.errors %}
-                                    <small class="text-danger">{{ error }}</small>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Category -->
-                            <div class="col-md-12">
-                                {{ form.category.label_tag }}
-                                {{ form.category }}
-                            </div>
-
-                            <!-- Products rendered manually -->
-                            <div class="col-md-12">
-                                <label>Products</label><br>
-                                {% for checkbox in form.products %}
-                                    <div class="form-check">
-                                        {{ checkbox.tag }}
-                                        <label class="form-check-label">{{ checkbox.choice_label }}</label>
-                                    </div>
-                                {% empty %}
-                                    <p>No products available.</p>
-                                {% endfor %}
-                                {% for error in form.products.errors %}
-                                    <small class="text-danger">{{ error }}</small>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Rest of the fields -->
-                            <div class="col-md-12">
-                                {{ form.email.label_tag }} {{ form.email }}
-                            </div>
-                            <div class="col-md-12">
-                                {{ form.phone_number.label_tag }} {{ form.phone_number }}
-                            </div>
-                            <div class="col-md-12">
-                                {{ form.address.label_tag }} {{ form.address }}
-                            </div>
-                            <div class="col-md-12">
-                                {{ form.city.label_tag }} {{ form.city }}
-                            </div>
-                            <div class="col-md-12">
-                                {{ form.country.label_tag }} {{ form.country }}
-                            </div>
-                            <div class="col-md-12">
-                                {{ form.is_verified }} {{ form.is_verified.label_tag }}
-                            </div>
-                            <div class="col-md-12">
-                                {{ form.is_active }} {{ form.is_active.label_tag }}
-                            </div>
-
+                            {{form.as_p}}
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary w-100">Submit</button>
                             </div>
