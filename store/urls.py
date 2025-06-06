@@ -31,7 +31,21 @@ urlpatterns = [
     path('view-issued-product/', views.view_issued_product, name='issue-product'),
 
     # Reports
-    path('export_csv/products/', export_products_to_csv, name='export_products'),
-    path('export_csv/batches/', export_batches_to_csv, name='export_batches'),
-    path('export_csv/issued-products/', export_issued_products_to_csv, name='export_issued_products'),
+    # Export Products CSV (default “daily” if no period is given)
+    path('export_csv/products/', export_products_to_csv,
+         name='export_products_default'),
+    path('export_csv/products/<str:time_period>/',
+         export_products_to_csv, name='export_products'),
+
+    # Export Batches CSV (default “daily” if no period is given)
+    path('export_csv/batches/', export_batches_to_csv,
+         name='export_batches_default'),
+    path('export_csv/batches/<str:time_period>/',
+         export_batches_to_csv, name='export_batches'),
+
+    # Export Issued Products CSV (default “daily” if no period is given)
+    path('export_csv/issued-products/', export_issued_products_to_csv,
+         name='export_issued_products_default'),
+    path('export_csv/issued-products/<str:time_period>/',
+         export_issued_products_to_csv, name='export_issued_products'),
 ]

@@ -13,13 +13,36 @@ from django.core.paginator import Paginator
 def tasty(request):
     return render(request, 'daze.html')
 
+
 @login_required(login_url='/user/login/')
 def home(request):
-    products = Product.objects.all()
-    paginator = Paginator(products, 10)
+    # 1) Fetch all products (latest first) and paginate
+    product_list = Product.objects.all().order_by('-id')
+    paginator = Paginator(product_list, 10)
     page_number = request.GET.get('page')
-    products = paginator.get_page(page_number)
-    return render(request, 'storehome.html', {"products": products})
+    page_obj = paginator.get_page(page_number)
+
+    # 2) For each product on this page, pull the latest batch’s unit cost,
+    #    then compute remaining_total_cost = quality_remaining × unit_cost.
+    for product in page_obj:
+        # because Batch.Meta.ordering = ['-date_received']
+        latest_batch = product.batches.first()
+        if latest_batch:
+            unit_cost = latest_batch.cost_per_item
+        else:
+            unit_cost = 0  # or Decimal('0.00') if you prefer
+
+        # quality_remaining is already a number (int or Decimal), not a method:
+        remaining_qty = product.quality_remaining
+
+        # Multiply to get the cost of whatever is left:
+        remaining_total_cost = remaining_qty * unit_cost
+
+        # Attach these values so the template can read them directly:
+        product.unit_cost = unit_cost
+        product.remaining_total_cost = remaining_total_cost
+
+    return render(request, 'storehome.html', {"products": page_obj})
 
 # Add Views
 @login_required(login_url='/user/login/')
