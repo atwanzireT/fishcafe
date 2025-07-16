@@ -9,23 +9,23 @@
                 <div class="card">
                     <div class="card-body">
                         <div>
-                            <h3 class="text-center mb-4">Fish Point Cafe</h3>
+                            <h2 class="text-center mb-4">Fish Point Cafe</h2>
                         </div>
-                        <h5 class="text-center mb-4">Order Details</h5>
+                        <h3 class="text-center mb-4">Order Details</h3>
                         <p><strong>Order Number:</strong> {{ order.random_id }} | {{ order.table }}</p>
 
                         <div class="row">
                             <div class="col-6">
-                                <h6>Customer:</h6>
-                                <p>{{ order.customer_name }}</p>
+                                <h4>{{ order.customer_name }}</h4>
+                                
                             </div>
                             <div class="col-6 text-right">
-                                <h6>Date:</h6>
-                                <p>{{ order.created }}</p>
+                                <h4>{{ order.created }}</h4>
+                                
                             </div>
                         </div>
 
-                        <h6>Order Items</h6>
+                        <h4>Ordered Items</h4>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
