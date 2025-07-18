@@ -9,18 +9,20 @@
                 <div class="card">
                     <div class="card-body">
                         <div>
-                            <h2 class="text-center mb-4">Fish Point Cafe</h2>
+                            <h2 class="text-center mb-4">FISH POINT CAFE</h2>
+                            <h3 class="text-center mb-4">Tel:0771 207212 - 0709 663814</h3>
                         </div>
-                        <h3 class="text-center mb-4">Order Details</h3>
+                        <h3 class="text-center mb-4">RECEIPT</h3>
                         <p><strong>Order Number:</strong> {{ order.random_id }} | {{ order.table }}</p>
 
                         <div class="row">
                             <div class="col-6">
-                                <h4>{{ order.customer_name }}</h4>
+                                <h4 class="text-center">{{ order.customer_name }}</h4>
+                                
                                 
                             </div>
-                            <div class="col-6 text-right">
-                                <h4>{{ order.created }}</h4>
+                            <div class="col-6 ">
+                                <h4 class="text-center">{{ order.created }}</h4>
                                 
                             </div>
                         </div>
