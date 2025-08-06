@@ -79,6 +79,7 @@ def dashboard(request):
   
     orderCount = OrderItem.objects.count()
 
+
 # Exclude cancelled orders from today's count
     orderTodayCount = OrderItem.objects.filter(
         order_date__range=date_range
@@ -141,7 +142,9 @@ def dashboard(request):
     )
 
     top_customer_overall = (
-        OrderItem.objects.filter(order_date__range=date_range)
+        OrderItem.objects.filter(
+            Q(order_date__range=date_range) & ~Q(status='Cancelled')
+        )
         .values('order__customer_name')
         .annotate(
             total_spent=Sum('total_price'),
