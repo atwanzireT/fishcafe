@@ -27,11 +27,7 @@ SECRET_KEY = 'django-insecure-uxkz-bvpq9boe&d611*w9o5vg1$bvtor-)y1@ur*ho52ocx(pt
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '147.182.132.190',
-    'fishcafeandlounge.com',
-    'www.fishcafeandlounge.com'
+'*'
 ]
 
 
